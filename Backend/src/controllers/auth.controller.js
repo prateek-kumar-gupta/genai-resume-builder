@@ -89,18 +89,54 @@ async function loginUserController(req, res) {
     })
 }
 
+/**
+ * @name logoutUserController
+ * @description logout a user by clearing the token cookie and blacklisting the token
+ * @access Public   
+ */
+
 async function logoutUserController(req, res) {
-    const token = req.cookies.token
-    if(token){
-        await tokenBlacklistModel.create({token})
+    // Attempt to get token from cookies or Authorization header
+    const token = req.cookies?.token || (req.headers.authorization && req.headers.authorization.split(' ')[1]);
+    
+    console.log("Token received for logout:", token);
+
+    if (token) {
+        try {
+            await tokenBlacklistModel.create({ token });
+            console.log("Token blacklisted successfully");
+        } catch (error) {
+            console.error("Error blacklisting token:", error);
+        }
+    } else {
+        console.log("No token found in request to blacklist");
     }
-    res.clearCookie("token")
+
+    res.clearCookie("token");
     res.status(200).json({
         message: "user logged out successfully"
-    })  
+    });  
+}
+/**
+ * @name getMeController
+ * @description Get the currently logged-in user's information
+ * @access Private
+ */
+async function getMeController(req, res) {
+    const user = await userModel.findById(req.user.id)
+    res.status(200).json({
+        message: "user fetched successfully",
+        user: {
+            id : user._id,
+            username: user.username,
+            email: user.email
+        }
+    })
 }
 module.exports = {
     registerUserController,
-    loginUserController
+    loginUserController,
+    logoutUserController,
+    getMeController
 }
 
