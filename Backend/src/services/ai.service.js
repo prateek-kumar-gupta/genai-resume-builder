@@ -7,17 +7,18 @@ const ai = new GoogleGenAI({
 });
 
 const interviewReportSchema = z.object({
+    title: z.string().describe("The title of the job for which the interview report is generated"),
     matchScore: z.number().describe("The candidate's match score against the job description from 0 to 100"),
     technicalQuestions: z.array(z.object({
         question: z.string().describe("The technical questions can be asked in interview"),
         intention: z.string().describe("The intention of the interviewer while asking this question"),
         answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc")
     })).describe("The list of technical questions can be asked in interview"),
-    behaviouralQuestions: z.array(z.object({
-        question: z.string().describe("The behavioural questions can be asked in interview"),
+    behavioralQuestions: z.array(z.object({
+        question: z.string().describe("The behavioral questions can be asked in interview"),
         intention: z.string().describe("The intention of the interviewer while asking this question"),
         answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc")
-    })).describe("The list of behavioural questions can be asked in interview"),
+    })).describe("The list of behavioral questions can be asked in interview"),
     skillGaps: z.array(z.object({
         skill: z.string().describe("The skill which the candidate is lacking"),
         severity: z.enum(["low", "medium", "high", "Low", "Medium", "High"]).describe("The severity level of the skill gap")
@@ -34,51 +35,36 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
 Analyze the following candidate's profile against the given job description and generate a comprehensive interview preparation report.
 
 Job Description:
-${jobDescription || "Not provided"}
+${jobDescription}
 
 Resume:
-${resume || "Not provided"}
+${resume}
 
 Candidate Self Description:
-${selfDescription || "Not provided"}
+${selfDescription}
 `;
 
+    const schema = typeof z.toJSONSchema === "function"
+        ? z.toJSONSchema(interviewReportSchema)
+        : zodToJsonSchema(interviewReportSchema);
+
     const response = await ai.models.generateContent({
-        model: "gemini-3.8-flash",
+        model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
             responseMimeType: "application/json",
-            responseSchema: typeof z.toJSONSchema === "function"
-                ? z.toJSONSchema(interviewReportSchema)
-                : zodToJsonSchema(interviewReportSchema),
+            responseSchema: schema
         },
     });
 
     const parsedData = JSON.parse(response.text);
-
-    // Normalize for mongoose interviewReportModel compatibility
-    if (parsedData.behaviouralQuestions && !parsedData.behavioralQuestions) {
-        parsedData.behavioralQuestions = parsedData.behaviouralQuestions;
-    }
-    if (Array.isArray(parsedData.skillGaps)) {
-        parsedData.skillGaps = parsedData.skillGaps.map((item) => ({
-            ...item,
-            severity: typeof item.severity === "string" ? item.severity.toLowerCase() : item.severity,
-        }));
-    }
-    if (Array.isArray(parsedData.preparationPlan)) {
-        parsedData.preparationPlan = parsedData.preparationPlan.map((item) => ({
-            ...item,
-            task: item.task || item.tasks || [],
-        }));
-    }
-
+    console.log(JSON.stringify(parsedData, null, 2));
     return parsedData;
 }
 
 async function invokeGeminiAi() {
     const response = await ai.models.generateContent({
-        model: "gemini-3.8-flash",
+        model: "gemini-3-flash-preview",
         contents: "Hello gemini ! Explain What is Interview ?"
     });
     console.log(response.text);
@@ -87,6 +73,5 @@ async function invokeGeminiAi() {
 
 module.exports = {
     generateInterviewReport,
-    invokeGeminiAi,
-    interviewReportSchema
+    invokeGeminiAi
 };

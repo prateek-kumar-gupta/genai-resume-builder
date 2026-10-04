@@ -98,11 +98,12 @@ const technicalQuestionSchema = new mongoose.Schema({
         type: String,
         required: [true, "Focus is required"]
     },
-    task: {
-        type: [String],
+    tasks: [{
+        type: String,
         required: [true, "Task is required"]
-    },
-
+    }]
+ }, {
+    _id: false
  })
 
 
@@ -116,6 +117,14 @@ const interviewReportSchema = new mongoose.Schema({
     },
     selfDescription: {
         type: String,
+    },
+    title: {
+        type: String,
+        required: [true, "Job title is required"]
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
     matchScore: {
         type: Number,
