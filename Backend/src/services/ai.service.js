@@ -58,7 +58,6 @@ ${selfDescription}
     });
 
     const parsedData = JSON.parse(response.text);
-    console.log(JSON.stringify(parsedData, null, 2));
     return parsedData;
 }
 
