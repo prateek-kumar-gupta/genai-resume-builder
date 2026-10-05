@@ -83,6 +83,7 @@ const technicalQuestionSchema = new mongoose.Schema({
     severity: {
         type: String,
         enum: ["low", "medium", "high"],
+        lowercase: true,
         required: [true, "Severity is required"]
     }
  },{

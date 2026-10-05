@@ -10,6 +10,6 @@ const interviewRouter = express.Router();
  * @description Generates a new interview report for a candidate based on their resume pdf, self-description, and job description
  * @access Private
  */
-interviewRouter.post("/generate-report", authMiddleware.authUser, upload.single("resume"), interviewController.generateInterviewReportController);
+interviewRouter.post("/", authMiddleware.authUser, upload.single("resume"), interviewController.generateInterviewReportController);
 
 module.exports = interviewRouter;
