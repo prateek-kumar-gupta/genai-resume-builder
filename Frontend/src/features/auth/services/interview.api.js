@@ -36,3 +36,9 @@ export const getAllInterviewReports = async () => {
     const response = await api.get("/api/interview");
     return response.data;
 }
+
+export const generateResumePdf = async ({ interviewReportId }) => {
+    // Placeholder to satisfy the user's snippet
+    console.log("generateResumePdf called for", interviewReportId);
+    return null;
+}

@@ -221,12 +221,10 @@ const Home = () => {
                     {/* Generation Loading State */}
                     {loading && (
                         <div className="loading-overlay-card animate-fade-in">
-                            <div className="scanner-container">
-                                <div className="pulse-ring"></div>
-                                <div className="pulse-ring delay-1"></div>
-                                <div className="scanner-center-icon">
-                                    <SparklesIcon size={30} />
-                                </div>
+                            <div className="aurora-loader">
+                                <div className="aurora-orb orb-1"></div>
+                                <div className="aurora-orb orb-2"></div>
+                                <div className="aurora-orb orb-3"></div>
                             </div>
 
                             <h3 className="loading-title">Synthesizing Interview Playbook...</h3>

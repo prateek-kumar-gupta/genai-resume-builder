@@ -1,4 +1,3 @@
-const pdfParse = require("pdf-parse");
 const { generateInterviewReport } = require("../services/ai.service");
 const interviewReportModel = require("../models/interviewReport.model");
 
@@ -17,18 +16,16 @@ async function generateInterviewReportController(req, res) {
             return res.status(400).json({ message: "Job description is required" });
         }
 
-        const parsedPdf = await pdfParse(req.file.buffer);
-        const resumeText = parsedPdf.text || "";
-
         const interviewReportByAi = await generateInterviewReport({
-            resume: resumeText,
+            resumeBuffer: req.file.buffer, // Pass the raw PDF directly to Gemini
+            resumeMimeType: req.file.mimetype,
             selfDescription: selfDescription || "",
             jobDescription: jobDescription.trim()
         });
 
         const interviewReport = await interviewReportModel.create({
             user: req.user.id,
-            resume: resumeText,
+            resume: "PDF Document Processed by AI", // We no longer extract raw text locally
             selfDescription: selfDescription || "",
             jobDescription: jobDescription.trim(),
             ...interviewReportByAi
@@ -40,8 +37,11 @@ async function generateInterviewReportController(req, res) {
         });
     } catch (err) {
         console.error("Error in generateInterviewReportController:", err);
+        const errorText = err instanceof Error ? (err.stack || err.message) : String(err);
+        require('fs').writeFileSync('error.log', errorText || "Unknown error");
         res.status(500).json({
-            message: err.message || "Failed to generate interview report"
+            message: "Failed to parse PDF or generate report. Please ensure you uploaded a valid PDF file.",
+            error: errorText
         });
     }
 }

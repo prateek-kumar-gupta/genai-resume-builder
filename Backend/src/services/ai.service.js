@@ -30,15 +30,20 @@ const interviewReportSchema = z.object({
     })).describe("A day wise preparation plan for the candidate to follow in order to crack the interview")
 });
 
-async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
-    const prompt = `You are an expert technical interviewer and career coach.
-Analyze the following candidate's profile against the given job description and generate a comprehensive interview preparation report.
+async function generateInterviewReport({ resumeBuffer, resumeMimeType, selfDescription, jobDescription }) {
+    const promptText = `You are an expert technical interviewer and career coach.
+Analyze the attached candidate's resume PDF against the given job description and generate a comprehensive interview preparation report.
+
+IMPORTANT INSTRUCTION FOR PREPARATION PLAN:
+The length (number of days) of the preparationPlan MUST be entirely driven by the depth and volume of the candidate's skill gaps.
+DO NOT use arbitrary short lengths like 3 or 4 days unless the candidate is literally 100% prepared and only needs a quick recap. 
+Think carefully: "How many actual days of study would it realistically take a human to learn and practice these missing skills?"
+If they are missing complex skills (e.g. System Design, Kubernetes, Advanced ML), the plan should genuinely span 14, 21, or even 30+ days.
+If they are missing minor syntax knowledge, it might be 5-10 days.
+Output the precise, realistic number of days required.
 
 Job Description:
 ${jobDescription}
-
-Resume:
-${resume}
 
 Candidate Self Description:
 ${selfDescription}
@@ -48,26 +53,73 @@ ${selfDescription}
         ? z.toJSONSchema(interviewReportSchema)
         : zodToJsonSchema(interviewReportSchema);
 
-    const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: schema
-        },
-    });
+    const modelsToTry = [
+        "gemini-3.8-flash",
+        "gemini-3.5-flash",
+        "gemini-3.1-flash-lite",
+        "gemini-2.5-flash"
+    ];
 
-    const parsedData = JSON.parse(response.text);
-    return parsedData;
+    let lastError = null;
+
+    for (const model of modelsToTry) {
+        try {
+            console.log(`Attempting to generate report with model: ${model}`);
+            const response = await ai.models.generateContent({
+                model: model,
+                contents: [
+                    promptText,
+                    {
+                        inlineData: {
+                            data: resumeBuffer.toString("base64"),
+                            mimeType: resumeMimeType || "application/pdf"
+                        }
+                    }
+                ],
+                config: {
+                    responseMimeType: "application/json",
+                    responseSchema: schema
+                },
+            });
+
+            // Parse and return immediately if successful
+            const parsedData = JSON.parse(response.text);
+            return parsedData;
+        } catch (error) {
+            console.warn(`Model ${model} failed: ${error.message}. Falling back to next model...`);
+            lastError = error;
+        }
+    }
+
+    // If all models failed, throw the last error
+    throw new Error(`All fallback models failed. Last error: ${lastError?.message}`);
 }
 
 async function invokeGeminiAi() {
-    const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: "Hello gemini ! Explain What is Interview ?"
-    });
-    console.log(response.text);
-    return response.text;
+    const modelsToTry = [
+        "gemini-3.8-flash",
+        "gemini-3.5-flash",
+        "gemini-3.1-flash-lite",
+        "gemini-2.5-flash"
+    ];
+
+    let lastError = null;
+
+    for (const model of modelsToTry) {
+        try {
+            const response = await ai.models.generateContent({
+                model: model,
+                contents: "Hello gemini ! Explain What is Interview ?"
+            });
+            console.log(`Success with ${model}:`, response.text);
+            return response.text;
+        } catch (error) {
+            console.warn(`Model ${model} failed: ${error.message}`);
+            lastError = error;
+        }
+    }
+
+    throw new Error(`All fallback models failed. Last error: ${lastError?.message}`);
 }
 
 module.exports = {

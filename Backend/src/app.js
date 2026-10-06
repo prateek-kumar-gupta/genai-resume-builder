@@ -22,5 +22,10 @@ app.use("/api/auth", authRouter)
 app.use("/api/interview", interviewRouter)
 
 
+app.use((err, req, res, next) => {
+    console.error('Unhandled Express Error:', err);
+    require('fs').writeFileSync('express_error.log', err.stack || err.message);
+    res.status(500).json({ message: 'Internal Server Error', error: err.message });
+});
 
 module.exports = app;
