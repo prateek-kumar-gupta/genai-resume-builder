@@ -24,7 +24,7 @@ export async function generateInterviewReportApi(formData) {
  * @returns {Promise<Object>}
  */
 export async function getMyInterviewReportsApi() {
-    const response = await api.get("/api/interview/my-reports");
+    const response = await api.get("/api/interview/");
     return response.data;
 }
 
@@ -34,6 +34,6 @@ export async function getMyInterviewReportsApi() {
  * @returns {Promise<Object>}
  */
 export async function getInterviewReportByIdApi(id) {
-    const response = await api.get(`/api/interview/${id}`);
+    const response = await api.get(`/api/interview/report/${id}`);
     return response.data;
 }
