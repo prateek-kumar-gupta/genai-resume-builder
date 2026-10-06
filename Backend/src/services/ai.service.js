@@ -95,6 +95,8 @@ ${selfDescription}
     throw new Error(`All fallback models failed. Last error: ${lastError?.message}`);
 }
 
+const puppeteer = require("puppeteer");
+
 async function invokeGeminiAi() {
     const modelsToTry = [
         "gemini-3.8-flash",
@@ -122,7 +124,91 @@ async function invokeGeminiAi() {
     throw new Error(`All fallback models failed. Last error: ${lastError?.message}`);
 }
 
+async function generatePdfFromHtml(htmlContent) {
+    const browser = await puppeteer.launch({
+        headless: "new",
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
+    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+
+    const pdfBuffer = await page.pdf({
+        format: "A4", 
+        margin: {
+            top: "20mm",
+            bottom: "20mm",
+            left: "15mm",
+            right: "15mm"
+        }
+    });
+
+    await browser.close();
+
+    return pdfBuffer;
+}
+
+async function generateResumePdf({ resume, selfDescription, jobDescription }) {
+    const resumePdfSchema = z.object({
+        html: z.string().describe("The HTML content of the resume which can be converted to PDF using any library like puppeteer")
+    });
+
+    const promptText = `Generate an ATS-friendly, professional resume for a candidate with the following details:
+Resume: ${resume}
+Self Description: ${selfDescription}
+Job Description: ${jobDescription}
+
+The response MUST be a JSON object with a single field "html" containing the HTML content of the resume. 
+The HTML MUST include inline CSS styles for an elegant, professional, and clean design (use sans-serif fonts like Inter, Roboto, or Arial). 
+Highlight the candidate's strengths and relevant experience based heavily on the Job Description. 
+Do NOT sound like an AI. Make it sound like a real, high-quality human-written resume.
+Ensure it is concise (1-2 pages maximum). Focus on quality.`;
+
+    const schema = typeof z.toJSONSchema === "function"
+        ? z.toJSONSchema(resumePdfSchema)
+        : zodToJsonSchema(resumePdfSchema);
+
+    const modelsToTry = [
+        "gemini-3.8-flash",
+        "gemini-3.5-flash",
+        "gemini-3.1-flash-lite",
+        "gemini-2.5-flash"
+    ];
+
+    let lastError = null;
+    let jsonContent = null;
+
+    for (const model of modelsToTry) {
+        try {
+            console.log(`Attempting to generate Resume PDF HTML with model: ${model}`);
+            const response = await ai.models.generateContent({
+                model: model,
+                contents: promptText,
+                config: {
+                    responseMimeType: "application/json",
+                    responseSchema: schema
+                }
+            });
+
+            jsonContent = JSON.parse(response.text);
+            break;
+        } catch (error) {
+            console.warn(`Model ${model} failed for Resume PDF: ${error.message}. Falling back...`);
+            lastError = error;
+        }
+    }
+
+    if (!jsonContent) {
+        throw new Error(`Failed to generate resume HTML. Last error: ${lastError?.message}`);
+    }
+
+    // Convert generated HTML to PDF Buffer via Puppeteer
+    const pdfBuffer = await generatePdfFromHtml(jsonContent.html);
+
+    return pdfBuffer;
+}
+
 module.exports = {
     generateInterviewReport,
-    invokeGeminiAi
+    invokeGeminiAi,
+    generateResumePdf
 };

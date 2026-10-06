@@ -25,5 +25,11 @@ interviewRouter.get("/report/:interviewId", authMiddleware.authUser, interviewCo
  * @access private
  */
 interviewRouter.get("/", authMiddleware.authUser, interviewController.getAllInterviewReportsController);
+/**
+ * @route POST /api/interview/resume/generate
+ * @description Generates an ATS-friendly resume PDF based on the interview report
+ * @access Private
+ */
+interviewRouter.post("/resume/generate", authMiddleware.authUser, interviewController.generateResumePdfController);
 
 module.exports = interviewRouter;

@@ -38,7 +38,9 @@ export const getAllInterviewReports = async () => {
 }
 
 export const generateResumePdf = async ({ interviewReportId }) => {
-    // Placeholder to satisfy the user's snippet
-    console.log("generateResumePdf called for", interviewReportId);
-    return null;
+    const response = await api.post("/api/interview/resume/generate", 
+        { interviewReportId },
+        { responseType: "blob" } // IMPORTANT: to receive PDF buffer
+    );
+    return response.data;
 }
