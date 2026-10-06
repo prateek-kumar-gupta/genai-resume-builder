@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { 
     CheckCircleIcon, 
     AlertCircleIcon, 
@@ -15,6 +16,7 @@ import {
 } from './Icons';
 
 const ReportView = ({ report, onBackToEditor }) => {
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('technical');
     const [expandedTechnical, setExpandedTechnical] = useState({ 0: true });
     const [expandedBehavioral, setExpandedBehavioral] = useState({ 0: true });
@@ -114,6 +116,14 @@ const ReportView = ({ report, onBackToEditor }) => {
                     <span>←</span> Return to Workspace
                 </button>
                 <div className="toolbar-actions">
+                    <button 
+                        className="tool-btn studio-btn" 
+                        onClick={() => navigate('/interview', { state: { report } })}
+                        title="Open report in 3-column studio layout"
+                    >
+                        <TargetIcon size={16} />
+                        <span>Studio 3-Column View ↗</span>
+                    </button>
                     <button className="tool-btn" onClick={handleCopyReport}>
                         {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
                         <span>{copied ? "Report Copied!" : "Copy Report"}</span>

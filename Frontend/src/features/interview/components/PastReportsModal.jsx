@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { XIcon, BriefcaseIcon, CalendarIcon, TargetIcon, RefreshCwIcon } from './Icons';
 import { getMyInterviewReportsApi } from '../services/interview.api';
 
 const PastReportsModal = ({ isOpen, onClose, onSelectReport }) => {
+    const navigate = useNavigate();
     const [reports, setReports] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -102,7 +104,17 @@ const PastReportsModal = ({ isOpen, onClose, onSelectReport }) => {
                                                 onClose();
                                             }}
                                         >
-                                            View Report →
+                                            Inline View
+                                        </button>
+                                        <button 
+                                            className="open-report-btn studio-btn"
+                                            onClick={() => {
+                                                navigate(`/interview/${rpt._id}`, { state: { report: rpt } });
+                                                onClose();
+                                            }}
+                                            title="Open report in 3-column studio layout"
+                                        >
+                                            Studio Layout ↗
                                         </button>
                                     </div>
                                 </div>

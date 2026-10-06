@@ -1,92 +1,215 @@
-// ── Shared Variables (mirrors home.scss theme) ────────────────────────────────
-$bg-page: #0d1117;
-$bg-card: #161b22;
-$bg-panel: #1c2230;
-$bg-input: #1e2535;
-$border-color: #2a3348;
-$text-primary: #e6edf3;
-$text-muted: #7d8590;
+// ── Shared Design Tokens ──────────────────────────────────────────────────────
+$bg-page: #0a0e14;
+$bg-card: #121721;
+$bg-panel: #181f2c;
+$bg-panel-hover: #1f2838;
+$bg-input: #1b2230;
+$border-color: #273145;
+$border-color-light: #37445e;
+
+$text-primary: #f0f6fc;
+$text-secondary: #9aa5b8;
+$text-muted: #6e798d;
+
 $accent: #ff2d78;
-$font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$accent-gradient: linear-gradient(135deg, #ff2d78 0%, #ff5e62 100%);
+$accent-soft: rgba(#ff2d78, 0.12);
+$accent-border: rgba(#ff2d78, 0.3);
 
-// severity palette
-$severity-high: #ff4d4d;
-$severity-medium: #f5a623;
-$severity-low: #3fb950;
+// Severity Color System
+$severity-high: #ff4d6d;
+$severity-medium: #f59f00;
+$severity-low: #2fb344;
 
-*::-webkit-scrollbar {
-    display: none;
+$font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+// ── Animations ─────────────────────────────────────────────────────────────────
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-// ── Page Shell ────────────────────────────────────────────────────────────────
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-down {
+    animation: slideDown 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.spin-icon {
+    animation: spin 1s linear infinite;
+}
+
+// ── Custom Scrollbar Styling ──────────────────────────────────────────────────
+.interview-content,
+.interview-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(#37445e, 0.6) transparent;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(#37445e, 0.6);
+        border-radius: 9999px;
+
+        &:hover {
+            background-color: rgba(#37445e, 0.9);
+        }
+    }
+}
+
+// ── Shell Container ───────────────────────────────────────────────────────────
 .interview-page {
     width: 100%;
     min-height: 100vh;
     background-color: $bg-page;
+    background-image: 
+        radial-gradient(circle at 10% 15%, rgba(#ff2d78, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(#4facfe, 0.04) 0%, transparent 45%);
     color: $text-primary;
     font-family: $font-stack;
     display: flex;
-    align-items: stretch;
-    padding: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
     box-sizing: border-box;
 }
 
-// ── 3-Column Layout ───────────────────────────────────────────────────────────
+// ── 3-Column Studio Layout (Matching Wireframe Image) ─────────────────────────
 .interview-layout {
     display: flex;
     width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
+    max-width: 1360px;
+    height: calc(100vh - 2.5rem);
+    min-height: 680px;
     background-color: $bg-card;
     border: 1px solid $border-color;
-    border-radius: 1rem;
-    justify-content: space-between;
+    border-radius: 1.1rem;
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.03);
+    overflow: hidden;
+    position: relative;
 }
 
+// Vertical Dividing Lines between the 3 sections
 .interview-divider {
     width: 1px;
     background-color: $border-color;
     flex-shrink: 0;
 }
 
-// ── Left Nav ─────────────────────────────────────────────────────────────────
+// ── LEFT COLUMN: Navigation ───────────────────────────────────────────────────
 .interview-nav {
-    width: 220px;
+    width: 250px;
     flex-shrink: 0;
-    padding: 1.75rem 1rem;
+    padding: 1.5rem 1rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 0.25rem;
+    background-color: rgba($bg-panel, 0.35);
+    box-sizing: border-box;
 
+    &__top {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
 
+    &__brand {
+        display: flex;
+        align-items: center;
+        padding: 0 0.5rem;
+    }
 
+    &__back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $text-secondary;
+        text-decoration: none;
+        padding: 0.4rem 0.65rem;
+        border-radius: 0.5rem;
+        transition: all 0.18s ease;
+
+        .back-arrow {
+            transition: transform 0.18s ease;
+        }
+
+        &:hover {
+            color: $text-primary;
+            background-color: $bg-panel;
+
+            .back-arrow {
+                transform: translateX(-3px);
+            }
+        }
+    }
 
     &__label {
         font-size: 0.7rem;
-        font-weight: 600;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         color: $text-muted;
-        padding: 0 0.75rem;
-        margin-bottom: 0.5rem;
+        padding: 0 0.65rem;
+        margin: 0;
     }
 
+    &__menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    // 3 core navigation buttons from wireframe
     &__item {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
+        gap: 0.7rem;
         width: 100%;
-        padding: 0.65rem 0.75rem;
-        background: none;
-        border: none;
-        border-radius: 0.5rem;
-        color: $text-muted;
+        padding: 0.75rem 0.85rem;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.65rem;
+        color: $text-secondary;
         font-family: $font-stack;
-        font-size: 0.875rem;
+        font-size: 0.88rem;
+        font-weight: 500;
         cursor: pointer;
         text-align: left;
-        transition: background-color 0.15s, color 0.15s;
+        transition: all 0.18s ease;
+        position: relative;
 
         &:hover {
             background-color: $bg-panel;
@@ -94,11 +217,30 @@ $severity-low: #3fb950;
         }
 
         &--active {
-            background-color: rgba($accent, 0.1);
-            color: $accent;
+            background-color: $accent-soft;
+            border-color: $accent-border;
+            color: $text-primary;
+            font-weight: 600;
 
-            .interview-nav__icon svg {
-                stroke: $accent;
+            .interview-nav__icon {
+                color: $accent;
+            }
+
+            .interview-nav__count {
+                background-color: rgba($accent, 0.2);
+                color: $accent;
+                border-color: rgba($accent, 0.35);
+            }
+
+            &::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 25%;
+                bottom: 25%;
+                width: 3px;
+                border-radius: 0 3px 3px 0;
+                background-color: $accent;
             }
         }
     }
@@ -106,110 +248,243 @@ $severity-low: #3fb950;
     &__icon {
         display: flex;
         align-items: center;
+        justify-content: center;
+        color: $text-muted;
         flex-shrink: 0;
+        transition: color 0.18s ease;
     }
-}
 
-// ── Center Content ────────────────────────────────────────────────────────────
-.interview-content {
-    flex: 1;
-    padding: 1.75rem 2rem;
-    overflow-y: auto;
-    min-height: initial;
-    max-height: calc(100vh - 3rem);
-    padding-bottom: 5rem;
-    align-items: flex-start;
-
-
-
-
-
-
-
-
-    section {
-        min-height: 100%;
-    }
-}
-
-.content-header {
-    display: flex;
-    align-items: baseline;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid $border-color;
-
-    h2 {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: $text-primary;
-        margin: 0;
+    &__text {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     &__count {
-        font-size: 0.8rem;
-        color: $text-muted;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.12rem 0.5rem;
+        border-radius: 9999px;
         background-color: $bg-panel;
-        padding: 0.15rem 0.6rem;
-        border-radius: 2rem;
         border: 1px solid $border-color;
+        color: $text-muted;
+    }
+
+    &__footer {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid $border-color;
+    }
+
+    &__action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.6rem;
+        border-radius: 0.55rem;
+        border: 1px solid $border-color;
+        background-color: $bg-panel;
+        color: $text-secondary;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.18s ease;
+
+        &:hover {
+            color: $text-primary;
+            border-color: $border-color-light;
+            background-color: $bg-panel-hover;
+        }
+
+        &.print-btn {
+            background-color: transparent;
+            border-style: dashed;
+        }
     }
 }
 
-// ── Question Cards ────────────────────────────────────────────────────────────
+// ── CENTER COLUMN: Main Content Area ──────────────────────────────────────────
+.interview-content {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 2rem 2.25rem;
+    box-sizing: border-box;
+    overflow-y: auto;
+    background-color: $bg-card;
+
+    .content-loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 60%;
+        gap: 1rem;
+        color: $text-secondary;
+    }
+}
+
+// Section Header inside Center Content
+.content-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid $border-color;
+
+    &__titles {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: $text-primary;
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+    }
+
+    &__count {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: $text-muted;
+        background-color: $bg-panel;
+        padding: 0.2rem 0.65rem;
+        border-radius: 2rem;
+        border: 1px solid $border-color;
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .header-pill-btn {
+        background: transparent;
+        border: 1px solid $border-color;
+        color: $text-secondary;
+        font-size: 0.78rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 0.45rem;
+        cursor: pointer;
+        transition: all 0.18s ease;
+
+        &:hover {
+            color: $text-primary;
+            background-color: $bg-panel;
+            border-color: $border-color-light;
+        }
+    }
+}
+
+// Roadmap Header Progress Widget
+.roadmap-header-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .roadmap-progress-bar-wrap {
+        width: 120px;
+        height: 6px;
+        background-color: $bg-panel;
+        border-radius: 9999px;
+        overflow: hidden;
+        border: 1px solid $border-color;
+    }
+
+    .roadmap-progress-bar-fill {
+        height: 100%;
+        background: $accent-gradient;
+        border-radius: 9999px;
+        transition: width 0.3s ease;
+    }
+
+    .roadmap-progress-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: $text-secondary;
+    }
+}
+
+// ── Question Cards (Technical & Behavioral) ───────────────────────────────────
 .q-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.9rem;
 }
 
 .q-card {
     background-color: $bg-panel;
     border: 1px solid $border-color;
-    border-radius: 0.6rem;
+    border-radius: 0.75rem;
     overflow: hidden;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
     &:hover {
-        border-color: lighten($border-color, 8%);
+        border-color: $border-color-light;
+    }
+
+    &--open {
+        border-color: rgba($accent, 0.4);
+        box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.3);
     }
 
     &__header {
         display: flex;
         align-items: flex-start;
-        gap: 0.75rem;
-        padding: 0.9rem 1rem;
+        gap: 0.85rem;
+        padding: 1.1rem 1.25rem;
         cursor: pointer;
         user-select: none;
     }
 
     &__index {
         flex-shrink: 0;
-        font-size: 0.7rem;
-        font-weight: 700;
+        font-size: 0.72rem;
+        font-weight: 800;
         color: $accent;
         background-color: rgba($accent, 0.1);
-        border: 1px solid rgba($accent, 0.2);
-        border-radius: 0.3rem;
-        padding: 0.15rem 0.4rem;
-        margin-top: 2px;
+        border: 1px solid rgba($accent, 0.25);
+        border-radius: 0.35rem;
+        padding: 0.2rem 0.5rem;
+        margin-top: 1px;
+
+        &.behavioral-index {
+            color: #70a1ff;
+            background-color: rgba(#70a1ff, 0.1);
+            border-color: rgba(#70a1ff, 0.25);
+        }
     }
 
     &__question {
         flex: 1;
         margin: 0;
-        font-size: 0.9rem;
-        font-weight: 500;
+        font-size: 0.95rem;
+        font-weight: 600;
         color: $text-primary;
-        line-height: 1.5;
+        line-height: 1.55;
+    }
+
+    &__chevron-wrap {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        padding-top: 2px;
     }
 
     &__chevron {
-        flex-shrink: 0;
         color: $text-muted;
-        transition: transform 0.2s;
-        margin-top: 2px;
+        transition: transform 0.2s ease, color 0.2s ease;
 
         &--open {
             transform: rotate(180deg);
@@ -218,66 +493,94 @@ $severity-low: #3fb950;
     }
 
     &__body {
-        padding: 0 1rem 1rem;
+        padding: 1rem 1.25rem 1.25rem;
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 1rem;
         border-top: 1px solid $border-color;
-        padding-top: 0.75rem;
+        background-color: rgba($bg-card, 0.5);
     }
 
     &__section {
         display: flex;
         flex-direction: column;
-        gap: 0.4rem;
+        gap: 0.45rem;
 
         p {
             margin: 0;
-            font-size: 0.835rem;
-            color: lighten($text-muted, 15%);
-            line-height: 1.6;
+            font-size: 0.88rem;
+            color: #c4cddb;
+            line-height: 1.65;
         }
     }
 
     &__tag {
-        font-size: 0.68rem;
+        font-size: 0.7rem;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
-        padding: 0.15rem 0.5rem;
-        border-radius: 0.25rem;
+        letter-spacing: 0.05em;
+        padding: 0.22rem 0.6rem;
+        border-radius: 0.35rem;
         width: fit-content;
 
         &--intention {
-            color: #a78bfa;
-            background-color: rgba(#a78bfa, 0.1);
-            border: 1px solid rgba(#a78bfa, 0.2);
+            color: #c084fc;
+            background-color: rgba(#c084fc, 0.12);
+            border: 1px solid rgba(#c084fc, 0.25);
         }
 
         &--answer {
-            color: #3fb950;
-            background-color: rgba(#3fb950, 0.1);
-            border: 1px solid rgba(#3fb950, 0.2);
+            color: #4ade80;
+            background-color: rgba(#4ade80, 0.12);
+            border: 1px solid rgba(#4ade80, 0.25);
+        }
+    }
+
+    &__footer {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 0.5rem;
+        border-top: 1px dashed rgba($border-color, 0.7);
+    }
+
+    &__copy-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.7rem;
+        border-radius: 0.4rem;
+        border: 1px solid $border-color;
+        background-color: $bg-panel;
+        color: $text-secondary;
+        font-size: 0.78rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.18s ease;
+
+        &:hover {
+            color: $text-primary;
+            border-color: $border-color-light;
+            background-color: $bg-panel-hover;
         }
     }
 }
 
-// ── Road Map ──────────────────────────────────────────────────────────────────
+// ── Road Map Timeline ─────────────────────────────────────────────────────────
 .roadmap-list {
     display: flex;
     flex-direction: column;
-    gap: 0;
     position: relative;
+    padding-left: 0.5rem;
 
-    // vertical timeline line
+    // Timeline connector line
     &::before {
         content: '';
         position: absolute;
-        left: 28px;
-        top: 0;
-        bottom: 0;
+        left: 22px;
+        top: 15px;
+        bottom: 15px;
         width: 2px;
-        background: linear-gradient(to bottom, $accent, rgba($accent, 0.1));
+        background: linear-gradient(to bottom, $accent, rgba($accent, 0.15));
         border-radius: 1px;
     }
 }
@@ -285,42 +588,45 @@ $severity-low: #3fb950;
 .roadmap-day {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.75rem 0 0.75rem 3.5rem;
+    gap: 0.75rem;
+    padding: 1rem 0 1.25rem 3.25rem;
     position: relative;
 
-    // dot on timeline
+    // Circle node on timeline
     &::before {
         content: '';
         position: absolute;
-        left: 21px;
-        top: 1.05rem;
+        left: 15px;
+        top: 1.35rem;
         width: 14px;
         height: 14px;
         border-radius: 50%;
         background-color: $bg-card;
-        border: 2px solid $accent;
+        border: 3px solid $accent;
+        box-shadow: 0 0 10px rgba($accent, 0.35);
     }
 
     &__header {
         display: flex;
-        align-items: center;
-        gap: 0.6rem;
+        align-items: baseline;
+        gap: 0.75rem;
     }
 
     &__badge {
-        font-size: 0.7rem;
-        font-weight: 700;
+        font-size: 0.72rem;
+        font-weight: 800;
         color: $accent;
-        background-color: rgba($accent, 0.1);
-        border: 1px solid rgba($accent, 0.25);
-        padding: 0.1rem 0.5rem;
-        border-radius: 2rem;
+        background-color: rgba($accent, 0.12);
+        border: 1px solid rgba($accent, 0.28);
+        padding: 0.18rem 0.6rem;
+        border-radius: 9999px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
     &__focus {
         margin: 0;
-        font-size: 0.95rem;
+        font-size: 1rem;
         font-weight: 600;
         color: $text-primary;
     }
@@ -331,53 +637,180 @@ $severity-low: #3fb950;
         padding: 0;
         display: flex;
         flex-direction: column;
-        gap: 0.35rem;
+        gap: 0.5rem;
+    }
 
-        li {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
-            font-size: 0.845rem;
-            color: lighten($text-muted, 12%);
-            line-height: 1.5;
+    .roadmap-task-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        padding: 0.55rem 0.8rem;
+        background-color: $bg-panel;
+        border: 1px solid $border-color;
+        border-radius: 0.55rem;
+        cursor: pointer;
+        transition: all 0.18s ease;
+
+        &:hover {
+            border-color: $border-color-light;
+            background-color: $bg-panel-hover;
+        }
+
+        &--done {
+            border-color: rgba($severity-low, 0.3);
+            background-color: rgba($severity-low, 0.06);
+
+            .roadmap-day__task-text {
+                color: $text-muted;
+                text-decoration: line-through;
+            }
         }
     }
 
-    &__bullet {
+    .roadmap-task-checkbox {
+        accent-color: $accent;
+        width: 16px;
+        height: 16px;
+        margin-top: 3px;
+        cursor: pointer;
         flex-shrink: 0;
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background-color: $text-muted;
-        margin-top: 8px;
+    }
+
+    &__task-text {
+        font-size: 0.86rem;
+        color: #aab4c5;
+        line-height: 1.5;
+        transition: color 0.18s ease;
     }
 }
 
-// ── Right Sidebar ─────────────────────────────────────────────────────────────
+// ── RIGHT COLUMN: Skill Gaps & Overview ───────────────────────────────────────
 .interview-sidebar {
-    width: 240px;
+    width: 280px;
     flex-shrink: 0;
-    padding: 1.75rem 1.25rem;
+    padding: 1.75rem 1.35rem;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.5rem;
+    background-color: rgba($bg-panel, 0.35);
+    box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .sidebar-divider {
     height: 1px;
     background-color: $border-color;
+    flex-shrink: 0;
 }
 
-// Match Score
+// Skill Gaps Widget (As featured prominently in the Wireframe Image)
+.skill-gaps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0;
+        letter-spacing: -0.01em;
+    }
+
+    &__count {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: $text-muted;
+        background-color: $bg-panel;
+        border: 1px solid $border-color;
+        padding: 0.12rem 0.5rem;
+        border-radius: 9999px;
+    }
+
+    &__list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+    }
+}
+
+// Skill Tag Pills (rounded bordered chips exactly as drawn in sketch)
+.skill-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    border: 1px solid $border-color;
+    background-color: $bg-panel;
+    color: $text-primary;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+
+    &:hover {
+        transform: translateY(-1px);
+        border-color: $border-color-light;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    &--high {
+        color: #ff6b81;
+        background-color: rgba($severity-high, 0.1);
+        border-color: rgba($severity-high, 0.32);
+
+        &:hover {
+            border-color: rgba($severity-high, 0.6);
+            background-color: rgba($severity-high, 0.16);
+        }
+    }
+
+    &--medium {
+        color: #ffa502;
+        background-color: rgba($severity-medium, 0.1);
+        border-color: rgba($severity-medium, 0.32);
+
+        &:hover {
+            border-color: rgba($severity-medium, 0.6);
+            background-color: rgba($severity-medium, 0.16);
+        }
+    }
+
+    &--low {
+        color: #2ed573;
+        background-color: rgba($severity-low, 0.1);
+        border-color: rgba($severity-low, 0.32);
+
+        &:hover {
+            border-color: rgba($severity-low, 0.6);
+            background-color: rgba($severity-low, 0.16);
+        }
+    }
+
+    &--selected {
+        outline: 2px solid $accent;
+        outline-offset: 1px;
+    }
+}
+
+// Match Score Radial / Pill Display
 .match-score {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.65rem;
 
     &__label {
-        font-size: 0.75rem;
-        font-weight: 600;
+        font-size: 0.72rem;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         color: $text-muted;
@@ -386,94 +819,137 @@ $severity-low: #3fb950;
     }
 
     &__ring {
-        width: 90px;
-        height: 90px;
+        width: 96px;
+        height: 96px;
         border-radius: 50%;
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        align-items: baseline;
         justify-content: center;
+        background-color: rgba($bg-card, 0.6);
         border: 4px solid;
+        box-shadow: 0 0 20px -4px currentColor;
+        padding-top: 1.6rem;
+        box-sizing: border-box;
 
         &.score--high {
+            color: $severity-low;
             border-color: $severity-low;
         }
 
         &.score--mid {
+            color: $severity-medium;
             border-color: $severity-medium;
         }
 
         &.score--low {
+            color: $severity-high;
             border-color: $severity-high;
         }
     }
 
     &__value {
-        font-size: 1.6rem;
+        font-size: 1.85rem;
         font-weight: 800;
         color: $text-primary;
         line-height: 1;
     }
 
     &__pct {
-        font-size: 0.75rem;
-        color: $text-muted;
-        margin-top: -2px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: inherit;
+        margin-left: 1px;
     }
 
     &__sub {
         margin: 0;
-        font-size: 0.75rem;
-        color: $severity-low;
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: $text-secondary;
         text-align: center;
     }
 }
 
-// Skill Gaps
-.skill-gaps {
+// Sidebar Metadata Summary
+.sidebar-summary {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.6rem;
+    background-color: rgba($bg-card, 0.6);
+    border: 1px solid $border-color;
+    border-radius: 0.65rem;
+    padding: 0.85rem;
 
-    &__label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: $text-muted;
-        margin: 0;
-    }
-
-    &__list {
+    .summary-row {
         display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.78rem;
+
+        .summary-label {
+            color: $text-muted;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: $text-primary;
+            max-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     }
 }
 
-.skill-tag {
-    font-size: 0.775rem;
-    font-weight: 500;
-    padding: 0.3rem 0.7rem;
-    border-radius: 0.4rem;
-    border: 1px solid;
-    cursor: default;
+// ── Responsive Design ─────────────────────────────────────────────────────────
+@media (max-width: 1100px) {
+    .interview-nav {
+        width: 210px;
+    }
+    .interview-sidebar {
+        width: 250px;
+    }
+}
 
-    &--high {
-        color: $severity-high;
-        background-color: rgba($severity-high, 0.1);
-        border-color: rgba($severity-high, 0.25);
+@media (max-width: 860px) {
+    .interview-page {
+        padding: 0.75rem;
     }
 
-    &--medium {
-        color: $severity-medium;
-        background-color: rgba($severity-medium, 0.1);
-        border-color: rgba($severity-medium, 0.25);
+    .interview-layout {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
     }
 
-    &--low {
-        color: $severity-low;
-        background-color: rgba($severity-low, 0.1);
-        border-color: rgba($severity-low, 0.25);
+    .interview-divider {
+        width: 100%;
+        height: 1px;
+    }
+
+    .interview-nav {
+        width: 100%;
+        padding: 1rem;
+
+        &__menu {
+            flex-direction: row;
+            overflow-x: auto;
+        }
+
+        &__item {
+            width: auto;
+            flex-shrink: 0;
+        }
+    }
+
+    .interview-content {
+        height: auto;
+        padding: 1.5rem 1rem;
+    }
+
+    .interview-sidebar {
+        width: 100%;
+        height: auto;
+        padding: 1.25rem 1rem;
     }
 }

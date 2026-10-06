@@ -1,5 +1,6 @@
 import React from 'react';
-import { SparklesIcon, LogOutIcon, UserIcon, HistoryIcon } from './Icons';
+import { Link } from 'react-router';
+import { SparklesIcon, LogOutIcon, UserIcon, HistoryIcon, TargetIcon } from './Icons';
 import { useAuth } from '../../auth/hooks/useAuth';
 
 const Navbar = ({ onOpenHistory, onPreviewDemo, hasActiveReport, onBackToEditor }) => {
@@ -21,6 +22,16 @@ const Navbar = ({ onOpenHistory, onPreviewDemo, hasActiveReport, onBackToEditor 
 
 
                 <div className="navbar-actions">
+                    <Link 
+                        to="/interview"
+                        className="nav-btn subtle-btn"
+                        title="Open 3-Column Interview Layout Studio"
+                        style={{ textDecoration: 'none' }}
+                    >
+                        <TargetIcon size={15} />
+                        <span>Studio View</span>
+                    </Link>
+
                     {hasActiveReport && (
                         <button 
                             className="nav-btn subtle-btn"
