@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { XIcon, BriefcaseIcon, CalendarIcon, TargetIcon, RefreshCwIcon } from './Icons';
-import { getMyInterviewReportsApi } from '../services/interview.api';
+import { getAllInterviewReports } from '../services/interview.api';
 
 const PastReportsModal = ({ isOpen, onClose, onSelectReport }) => {
     const navigate = useNavigate();
@@ -17,9 +17,9 @@ const PastReportsModal = ({ isOpen, onClose, onSelectReport }) => {
             setLoading(true);
             setError(null);
             try {
-                const res = await getMyInterviewReportsApi();
+                const res = await getAllInterviewReports();
                 if (isMounted) {
-                    setReports(res?.reports || []);
+                    setReports(res?.interviewReports || []);
                 }
             } catch (err) {
                 if (isMounted) {

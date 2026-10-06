@@ -27,20 +27,25 @@ const interviewReportSchema = z.object({
         day: z.number().describe("The day number in the preparation plan, starting from day 1"),
         focus: z.string().describe("The main focus for this day in preparation plan, could be any concept or skill etc"),
         tasks: z.array(z.string()).describe("The list of tasks to be completed for that day in preparation plan")
-    })).describe("A day wise preparation plan for the candidate to follow in order to crack the interview")
+    })).describe("A day wise preparation plan for the candidate to follow in order to crack the interview"),
+    extractedResumeText: z.string().describe("The plain text extracted from the provided resume PDF, required for future downstream tasks.")
 });
 
 async function generateInterviewReport({ resumeBuffer, resumeMimeType, selfDescription, jobDescription }) {
-    const promptText = `You are an expert technical interviewer and career coach.
-Analyze the attached candidate's resume PDF against the given job description and generate a comprehensive interview preparation report.
+    const promptText = `You are an elite, brutally honest FAANG technical interviewer and career coach.
+Analyze the attached candidate's resume PDF against the given job description and generate a highly comprehensive, REALISTIC interview preparation report.
 
-IMPORTANT INSTRUCTION FOR PREPARATION PLAN:
-The length (number of days) of the preparationPlan MUST be entirely driven by the depth and volume of the candidate's skill gaps.
-DO NOT use arbitrary short lengths like 3 or 4 days unless the candidate is literally 100% prepared and only needs a quick recap. 
-Think carefully: "How many actual days of study would it realistically take a human to learn and practice these missing skills?"
-If they are missing complex skills (e.g. System Design, Kubernetes, Advanced ML), the plan should genuinely span 14, 21, or even 30+ days.
-If they are missing minor syntax knowledge, it might be 5-10 days.
-Output the precise, realistic number of days required.
+CRITICAL INSTRUCTION FOR PREPARATION PLAN:
+Provide a TRULY REALISTIC, extensive, and highly practical day-by-day roadmap.
+Due to system constraints, the total length of the plan MUST be strictly between 5 and 25 days.
+- If they are missing major skills (e.g. System Design, Cloud, new languages), the plan MUST span exactly 20 to 25 days.
+- If they are missing moderate skills, it MUST span 10 to 19 days.
+- Even for very minor gaps, it MUST be exactly 5 to 9 days.
+Never generate less than 5 days or more than 25 days.
+
+FEASIBILITY REQUIREMENT:
+The daily workload MUST be humanly feasible (e.g., assuming 2-3 hours of study per day). 
+Do NOT cram 6 months of learning into a 25-day plan. If they have massive skill gaps, focus the plan on the most high-impact, interview-critical concepts for those skills rather than an impossible full mastery. Every day must have highly specific, achievable, and actionable tasks.
 
 Job Description:
 ${jobDescription}
@@ -57,7 +62,7 @@ ${selfDescription}
         "gemini-3.8-flash",
         "gemini-3.5-flash",
         "gemini-3.1-flash-lite",
-        "gemini-2.5-flash"
+        "gemini-3-flash-preview"
     ];
 
     let lastError = null;
@@ -102,7 +107,7 @@ async function invokeGeminiAi() {
         "gemini-3.8-flash",
         "gemini-3.5-flash",
         "gemini-3.1-flash-lite",
-        "gemini-2.5-flash"
+        "gemini-3-flash-preview"
     ];
 
     let lastError = null;
@@ -152,16 +157,44 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
         html: z.string().describe("The HTML content of the resume which can be converted to PDF using any library like puppeteer")
     });
 
-    const promptText = `Generate an ATS-friendly, professional resume for a candidate with the following details:
+const promptText = `Generate an ATS-friendly, professional resume for a candidate with the following details:
 Resume: ${resume}
 Self Description: ${selfDescription}
 Job Description: ${jobDescription}
 
 The response MUST be a JSON object with a single field "html" containing the HTML content of the resume. 
+
+CRITICAL INSTRUCTIONS FOR QUALITY:
 The HTML MUST include inline CSS styles for an elegant, professional, and clean design (use sans-serif fonts like Inter, Roboto, or Arial). 
 Highlight the candidate's strengths and relevant experience based heavily on the Job Description. 
 Do NOT sound like an AI. Make it sound like a real, high-quality human-written resume.
-Ensure it is concise (1-2 pages maximum). Focus on quality.`;
+Zero Fluff or AI Buzzwords: Absolutely avoid robotic, overly-complex AI words (like "Spearheaded," "Synergized," "Delved", "Navigated"). Focus purely on concrete impact and metrics.
+Length Constraint: The resume MUST perfectly fit on A4 paper and MUST NOT exceed 2 pages. Be concise and prioritize the most recent, relevant experience. Focus on quality over extreme detail.
+
+CRITICAL INSTRUCTIONS FOR LAYOUT, STYLING, AND PAGINATION:
+You MUST use the following exact CSS in the <head> of your HTML to ensure perfect styling and fix all pagination/blank space issues:
+
+<style>
+  @page { margin: 15mm; }
+  body { font-family: 'Inter', 'Helvetica', 'Arial', sans-serif; font-size: 11pt; line-height: 1.3; color: #111; margin: 0; padding: 0; }
+  h1 { font-size: 24pt; font-weight: bold; margin: 0 0 5px 0; color: #111; }
+  .contact-info { font-size: 10pt; margin-bottom: 15px; color: #333; }
+  h2 { font-size: 12pt; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #222; margin: 15px 0 10px 0; padding-bottom: 3px; page-break-after: avoid; }
+  .entry { margin-bottom: 12px; page-break-inside: avoid; }
+  .entry-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 2px; }
+  .entry-subtitle { font-style: italic; margin-bottom: 4px; color: #444; }
+  ul { margin: 0; padding-left: 18px; }
+  li { margin-bottom: 4px; text-align: justify; }
+  .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+</style>
+
+HTML STRUCTURE RULES:
+1. Contact Info MUST be a single line separated by pipes ( | ).
+2. Use <h2> for section headers ("PROFESSIONAL SUMMARY", "WORK EXPERIENCE", etc.).
+3. Wrap each individual job or education item in a <div class="entry">. This specific class fixes the massive blank space issue by preventing awkward page breaks inside a single job, while allowing breaks between different jobs.
+4. Put the company and date in a <div class="entry-header">, and the role in a <div class="entry-subtitle">.
+5. Technical Skills MUST be wrapped in <div class="skills-grid">.
+6. Absolutely DO NOT add huge empty margins, <br> tags, or empty divs anywhere. Keep the layout dense and professional.`;
 
     const schema = typeof z.toJSONSchema === "function"
         ? z.toJSONSchema(resumePdfSchema)
@@ -171,7 +204,7 @@ Ensure it is concise (1-2 pages maximum). Focus on quality.`;
         "gemini-3.8-flash",
         "gemini-3.5-flash",
         "gemini-3.1-flash-lite",
-        "gemini-2.5-flash"
+        "gemini-3-flash-preview"
     ];
 
     let lastError = null;

@@ -1,9 +1,11 @@
-import { getAllInterviewReports, getInterviewReportById, generateInterviewReport, generateResumePdf } from "../../auth/services/interview.api"
+import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf } from "../services/interview.api"
 import { useContext, useEffect } from "react"
 import { InterviewContext } from "../interview.context"
 import { useParams } from "react-router"
 
+
 export const useInterview = () => {
+
     const context = useContext(InterviewContext)
     const { interviewId } = useParams()
 
@@ -25,7 +27,7 @@ export const useInterview = () => {
             setLoading(false)
         }
 
-        return response?.interviewReport
+        return response.interviewReport
     }
 
     const getReportById = async (interviewId) => {
@@ -39,7 +41,7 @@ export const useInterview = () => {
         } finally {
             setLoading(false)
         }
-        return response?.interviewReport
+        return response.interviewReport
     }
 
     const getReports = async () => {
@@ -47,15 +49,14 @@ export const useInterview = () => {
         let response = null
         try {
             response = await getAllInterviewReports()
-            // Backend getAllInterviewReports returns { reports: [...] }
-            setReports(response.reports)
+            setReports(response.interviewReports)
         } catch (error) {
             console.log(error)
         } finally {
             setLoading(false)
         }
 
-        return response?.reports
+        return response.interviewReports
     }
 
     const getResumePdf = async (interviewReportId) => {
@@ -63,14 +64,12 @@ export const useInterview = () => {
         let response = null
         try {
             response = await generateResumePdf({ interviewReportId })
-            if (response) {
-                const url = window.URL.createObjectURL(new Blob([ response ], { type: "application/pdf" }))
-                const link = document.createElement("a")
-                link.href = url
-                link.setAttribute("download", `resume_${interviewReportId}.pdf`)
-                document.body.appendChild(link)
-                link.click()
-            }
+            const url = window.URL.createObjectURL(new Blob([ response ], { type: "application/pdf" }))
+            const link = document.createElement("a")
+            link.href = url
+            link.setAttribute("download", `resume_${interviewReportId}.pdf`)
+            document.body.appendChild(link)
+            link.click()
         }
         catch (error) {
             console.log(error)
@@ -80,7 +79,7 @@ export const useInterview = () => {
     }
 
     useEffect(() => {
-        if (interviewId && interviewId !== "demo") {
+        if (interviewId) {
             getReportById(interviewId)
         } else {
             getReports()
@@ -88,4 +87,5 @@ export const useInterview = () => {
     }, [ interviewId ])
 
     return { loading, report, reports, generateReport, getReportById, getReports, getResumePdf }
+
 }
