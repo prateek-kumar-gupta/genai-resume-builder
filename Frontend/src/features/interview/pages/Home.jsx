@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import Navbar from '../components/Navbar';
-import ReportView from '../components/ReportView';
 import PastReportsModal from '../components/PastReportsModal';
+import { useInterview } from '../hooks/useinterview';
 import { 
     SparklesIcon, 
     UploadCloudIcon, 
@@ -16,10 +17,15 @@ import {
     CheckCircleIcon
 } from '../components/Icons';
 import { sampleJobDescriptions, sampleDemoReport } from '../data/sampleData';
-import { generateInterviewReportApi } from '../services/interview.api';
 import "../style/home.scss";
 
 const Home = () => {
+    const navigate = useNavigate();
+    const {loading, generateReport, reports, getReports} = useInterview();
+
+    useEffect(() => {
+        getReports();
+    }, []);
     // Input state based on user's UI structure
     const [jobDescription, setJobDescription] = useState("");
     const [resumeFile, setResumeFile] = useState(null);
@@ -27,14 +33,11 @@ const Home = () => {
     
     // UI states
     const [isDragging, setIsDragging] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
     const [loadingStage, setLoadingStage] = useState(0);
     const [errorMsg, setErrorMsg] = useState(null);
-    const [activeReport, setActiveReport] = useState(null);
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
     const fileInputRef = useRef(null);
-    const reportRef = useRef(null);
 
     // AI Generation progress stages
     const loadingSteps = [
@@ -46,20 +49,14 @@ const Home = () => {
 
     useEffect(() => {
         let interval;
-        if (isLoading) {
+        if (loading) {
             setLoadingStage(0);
             interval = setInterval(() => {
                 setLoadingStage(prev => (prev < loadingSteps.length - 1 ? prev + 1 : prev));
             }, 3000);
         }
         return () => clearInterval(interval);
-    }, [isLoading]);
-
-    useEffect(() => {
-        if (activeReport && reportRef.current) {
-            reportRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    }, [activeReport]);
+    }, [loading]);
 
     // Drag & Drop handlers for resume
     const handleDragOver = (e) => {
@@ -130,12 +127,6 @@ const Home = () => {
         }
     };
 
-    // Quick demo report preview
-    const handlePreviewDemo = () => {
-        setErrorMsg(null);
-        setActiveReport(sampleDemoReport);
-    };
-
     // Clear all inputs
     const handleClearInputs = () => {
         setJobDescription("");
@@ -159,28 +150,14 @@ const Home = () => {
             return;
         }
 
-        setIsLoading(true);
-
         try {
-            const formData = new FormData();
-            formData.append("resume", resumeFile);
-            formData.append("jobDescription", jobDescription.trim());
-            if (selfDescription.trim()) {
-                formData.append("selfDescription", selfDescription.trim());
-            }
-
-            const data = await generateInterviewReportApi(formData);
-            if (data?.interviewReport) {
-                setActiveReport(data.interviewReport);
-            } else {
-                throw new Error("No report returned by the server");
+            const data = await generateReport({ jobDescription: jobDescription.trim(), selfDescription: selfDescription.trim(), resumeFile });
+            if (data && data._id) {
+                navigate(`/interview/${data._id}`);
             }
         } catch (err) {
             console.error("Report generation failed:", err);
-            const serverMessage = err.response?.data?.message || err.message || "Failed to generate report. Please try again.";
-            setErrorMsg(serverMessage);
-        } finally {
-            setIsLoading(false);
+            setErrorMsg("Failed to generate report. Please try again.");
         }
     };
 
@@ -192,12 +169,9 @@ const Home = () => {
             {/* Top Navigation */}
             <Navbar 
                 onOpenHistory={() => setIsHistoryModalOpen(true)}
-                onPreviewDemo={handlePreviewDemo}
-                hasActiveReport={!!activeReport}
-                onBackToEditor={() => {
-                    setActiveReport(null);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
+                onPreviewDemo={() => {}}
+                hasActiveReport={false}
+                onBackToEditor={() => {}}
             />
 
             <main className="home">
@@ -245,7 +219,7 @@ const Home = () => {
                     )}
 
                     {/* Generation Loading State */}
-                    {isLoading && (
+                    {loading && (
                         <div className="loading-overlay-card animate-fade-in">
                             <div className="scanner-container">
                                 <div className="pulse-ring"></div>
@@ -484,10 +458,10 @@ const Home = () => {
                                     type="button"
                                     className="button primary-button generate-btn"
                                     onClick={handleGenerateReport}
-                                    disabled={isLoading}
+                                    disabled={loading}
                                 >
                                     <div className="btn-content">
-                                        {isLoading ? (
+                                        {loading ? (
                                             <>
                                                 <RefreshCwIcon size={20} className="spin-icon" />
                                                 <span>Synthesizing Report...</span>
@@ -505,14 +479,6 @@ const Home = () => {
                                     <button 
                                         type="button" 
                                         className="text-link-btn"
-                                        onClick={handlePreviewDemo}
-                                    >
-                                        ⚡ View Live Sample Report
-                                    </button>
-                                    <span className="dot-sep">•</span>
-                                    <button 
-                                        type="button" 
-                                        className="text-link-btn"
                                         onClick={handleClearInputs}
                                     >
                                         Reset Inputs
@@ -522,16 +488,20 @@ const Home = () => {
                         </div>
                     </div>
 
-                    {/* REPORT SECTION (Rendered dynamically when activeReport exists) */}
-                    {activeReport && (
-                        <div ref={reportRef} className="active-report-anchor">
-                            <ReportView 
-                                report={activeReport} 
-                                onBackToEditor={() => {
-                                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                                }}
-                            />
-                        </div>
+                    {/* Recent Reports List */}
+                    {reports && reports.length > 0 && (
+                        <section className='recent-reports' style={{ marginTop: '40px' }}>
+                            <h2>My Recent Interview Plans</h2>
+                            <ul className='reports-list'>
+                                {reports.map(report => (
+                                    <li key={report._id} className='report-item' onClick={() => navigate(`/interview/${report._id}`)}>
+                                        <h3>{report.title || 'Untitled Position'}</h3>
+                                        <p className='report-meta'>Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
+                                        <p className={`match-score ${report.matchScore >= 80 ? 'score--high' : report.matchScore >= 60 ? 'score--mid' : 'score--low'}`}>Match Score: {report.matchScore}%</p>
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
                     )}
                 </div>
             </main>
@@ -541,7 +511,7 @@ const Home = () => {
                 isOpen={isHistoryModalOpen}
                 onClose={() => setIsHistoryModalOpen(false)}
                 onSelectReport={(report) => {
-                    setActiveReport(report);
+                    navigate(`/interview/${report._id}`);
                 }}
             />
         </div>
