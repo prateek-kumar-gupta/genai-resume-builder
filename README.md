@@ -1,3 +1,5 @@
+[![Live Demo](https://img.shields.io/badge/Live_Demo-career--craft-blue?style=for-the-badge)](https://career-craft-gamma-six.vercel.app) 
+
 # CareerCraft
 
 CareerCraft is a full-stack web application designed to help software engineers and job seekers prepare for interviews. It takes a target job description and your current resume, passes them to Google's Gemini AI, and generates a detailed, customized interview strategy and preparation report.
@@ -86,3 +88,4 @@ The application follows a decoupled 4-layer MERN architecture:
 2. Navigate to the Home page and paste the Job Description of the role you want.
 3. Upload your current Resume in PDF format.
 4. Click "Generate Interview Report". The backend will process the PDF, query Gemini, and redirect you to a custom interview strategy dashboard.
+
