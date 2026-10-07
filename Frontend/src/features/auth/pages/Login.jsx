@@ -1,10 +1,10 @@
-﻿import React, {useState} from 'react'
+import React, {useState} from 'react'
 import { useNavigate,Link } from 'react-router'
 import "../auth.form.scss"
 import { useAuth } from '../hooks/useAuth';
 import axios from 'axios';
 import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../../../../firebase";
+import { auth, googleProvider } from "../../../firebase";
 
 
 const Login = () => {
@@ -200,5 +200,6 @@ const Login = () => {
 }
 
 export default Login
+
 
 

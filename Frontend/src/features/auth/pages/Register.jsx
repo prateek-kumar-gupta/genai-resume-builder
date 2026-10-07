@@ -1,9 +1,9 @@
-﻿import React, {useState} from 'react'
+import React, {useState} from 'react'
 import {useAuth} from "../hooks/useAuth"
 import { useNavigate,Link } from 'react-router'
 import "../auth.form.scss"
 import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../../../../firebase";
+import { auth, googleProvider } from "../../../firebase";
 
 
 const Register = () => {
@@ -99,4 +99,5 @@ const Register = () => {
 }
 
 export default Register
+
 
