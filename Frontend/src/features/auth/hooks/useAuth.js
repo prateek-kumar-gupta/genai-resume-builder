@@ -75,7 +75,9 @@ export const useAuth = () => {
         loading,
         handleLogin,
         handleRegister,
-        handleLogout
+        handleLogout,
+        handleGoogleLogin
     }
 }
+
 
