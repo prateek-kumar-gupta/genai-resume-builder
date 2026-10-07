@@ -100,7 +100,7 @@ ${selfDescription}
     throw new Error(`All fallback models failed. Last error: ${lastError?.message}`);
 }
 
-const puppeteer = require("puppeteer");
+
 
 async function invokeGeminiAi() {
     const modelsToTry = [
@@ -234,10 +234,8 @@ HTML STRUCTURE RULES:
         throw new Error(`Failed to generate resume HTML. Last error: ${lastError?.message}`);
     }
 
-    // Convert generated HTML to PDF Buffer via Puppeteer
-    const pdfBuffer = await generatePdfFromHtml(jsonContent.html);
-
-    return pdfBuffer;
+    // Return the raw HTML string instead of trying to run Puppeteer on Render
+    return jsonContent.html;
 }
 
 module.exports = {
@@ -245,3 +243,4 @@ module.exports = {
     invokeGeminiAi,
     generateResumePdf
 };
+
