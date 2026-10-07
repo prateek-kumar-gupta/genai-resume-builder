@@ -85,3 +85,29 @@ When discussing the project in an interview, highlighting technical hurdles demo
 ### Challenge 4: Passing Objects vs. Arguments in API Functions
 **The Problem:** During the Registration UI overhaul, the frontend continuously received `400 Bad Request` errors from the backend claiming `email` and `password` were missing, even though the inputs were filled.
 **The Solution:** Debugging the network payload revealed an argument destructuring mismatch. The React Hook was passing an object `{ username, email, password }` into the API service layer, but the service function `export async function register(username, email, password)` expected distinct arguments. The object was mapped entirely to `username`, leaving the rest `undefined`. We resolved this by aligning the function signatures and maintaining strict separation of concerns between Hooks (data collection) and API Services (data formatting).
+
+---
+
+## 5. Deployment Strategy & Environment Configuration
+
+Deploying a decoupled MERN stack application requires careful orchestration of Cross-Origin Resource Sharing (CORS) and API base URLs.
+
+### 5.1 Dynamic Environment URLs
+During development, the frontend runs on \http://localhost:5173\ and the backend on \http://localhost:3000\. However, in production, these URLs change to random domain names provided by the hosting providers (e.g., Vercel and Render).
+
+**The Solution:** We utilize environment variables to dynamically switch these URLs.
+*   **Backend CORS:** In \pp.js\, we configure CORS to accept requests from \process.env.FRONTEND_URL || 'http://localhost:5173'\. This prevents unauthorized domains from querying our API, while allowing our Vercel frontend to connect seamlessly.
+*   **Frontend Axios:** In \uth.api.js\ and \interview.api.js\, we set the Axios \aseURL\ to \import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'\. Vite automatically injects the production URL during the build process, ensuring all API calls are routed correctly.
+
+### 5.2 The Deployment Pipeline
+We chose a highly reliable, free-tier friendly deployment stack that separates the frontend and backend to allow for independent scaling.
+
+1.  **Database (MongoDB Atlas):** Hosted in the cloud, requiring no local database management.
+2.  **Backend (Render.com):** 
+    *   We deployed the Node.js/Express server as a Render "Web Service".
+    *   We specifically set the Root Directory to \Backend\ to ensure Render only installs dependencies for the server.
+    *   All secrets (\MONGO_URI\, \JWT_SECRET\, \GOOGLE_GENAI_API_KEY\, \EMAIL_USER\, \EMAIL_PASS\) are securely injected via Render's dashboard.
+3.  **Frontend (Vercel):**
+    *   Vercel is optimized for Vite and React. We imported the GitHub repository and set the Root Directory to \Frontend\.
+    *   We injected the Firebase OAuth keys alongside the crucial \VITE_BACKEND_URL\ (pointing to the live Render server).
+4.  **The Final Handshake:** After Vercel generated the live frontend URL, we fed that URL back into Render's \FRONTEND_URL\ environment variable. This completed the CORS whitelist, allowing the two separated systems to securely exchange JWT cookies over the internet.
