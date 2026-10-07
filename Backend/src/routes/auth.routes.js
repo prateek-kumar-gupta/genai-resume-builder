@@ -57,5 +57,14 @@ authRouter.post('/forgot-password/reset', authController.verifyOtpAndResetPasswo
  */
 authRouter.post('/google', authController.googleLoginController);
 
+
+/**
+ * @route POST /api/auth/register/request-otp
+ * @description Request an OTP for new user registration
+ * @access Public
+ */
+authRouter.post('/register/request-otp', authController.requestRegistrationOtpController);
+
 module.exports = authRouter;;
+
 

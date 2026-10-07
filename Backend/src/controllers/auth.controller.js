@@ -11,7 +11,7 @@ const tokenBlacklistModel = require("../models/blacklist.model")
 
 async function registerUserController(req, res) {
 
-const  {username , email , password} = req.body
+const  {username , email , password, otp} = req.body
 if(!username || !email || !password){
     return res.status(400).json({
         message: "username , email and password are required"
@@ -254,7 +254,37 @@ async function googleLoginController(req, res) {
     }
 }
 
+
+/**
+ * @name requestRegistrationOtpController
+ * @description Request an OTP for new user registration
+ * @access Public
+ */
+async function requestRegistrationOtpController(req, res) {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+
+    const user = await userModel.findOne({ email });
+    if (user) {
+        return res.status(400).json({ message: 'Email is already registered' });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    await require('../models/otp.model').findOneAndDelete({ email });
+    await require('../models/otp.model').create({ email, otp });
+
+    const { sendOtpEmail } = require('../services/email.service');
+    const emailSent = await sendOtpEmail(email, otp);
+    
+    if (emailSent) {
+        res.status(200).json({ message: 'OTP sent to email successfully' });
+    } else {
+        res.status(500).json({ message: 'Failed to send verification email.' });
+    }
+}
 module.exports = {
+    requestRegistrationOtpController,
     registerUserController,
     loginUserController,
     logoutUserController,
@@ -263,6 +293,7 @@ module.exports = {
     verifyOtpAndResetPasswordController,
     googleLoginController
 };;
+
 
 
 

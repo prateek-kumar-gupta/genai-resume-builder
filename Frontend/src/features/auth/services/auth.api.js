@@ -5,12 +5,10 @@ import axios from "axios"
 })
 
 
-export async function register(username, email, password) {
+export async function register(username, email, password, otp, otp) {
     try {
      const response = await api.post("/api/auth/register", {
-        username,
-        email,
-        password
+        username, email, password, otp
    
 })
      return response.data;
@@ -55,6 +53,16 @@ export async function googleLogin(email, username, googleId, profilePicture) {
         const response = await api.post("/api/auth/google", { 
            email, username, googleId, profilePicture
         })
+        return response.data;
+    } catch(err) {
+         console.log(err)
+         throw err;
+    }
+}
+
+export async function requestRegistrationOtp(email) {
+    try {
+        const response = await api.post("/api/auth/register/request-otp", { email })
         return response.data;
     } catch(err) {
          console.log(err)

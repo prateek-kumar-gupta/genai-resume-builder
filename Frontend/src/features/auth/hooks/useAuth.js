@@ -19,10 +19,10 @@ export const useAuth = () => {
         }
     }
 
-    const handleRegister = async ({ username, email, password }) => {
+    const handleRegister = async ({ username, email, password, otp }) => {
         setLoading(true);
         try {
-            const data = await register(username, email, password)
+            const data = await register(username, email, password, otp)
             setUser(data.user);
         } catch (err) {
 
@@ -79,5 +79,6 @@ export const useAuth = () => {
         handleGoogleLogin
     }
 }
+
 
 
