@@ -1,4 +1,7 @@
-import React, {useState} from 'react'
+const fs = require('fs');
+const path = './Frontend/src/features/auth/pages/Login.jsx';
+
+const newContent = import React, {useState} from 'react'
 import { useNavigate,Link } from 'react-router'
 import "../auth.form.scss"
 import { useAuth } from '../hooks/useAuth';
@@ -170,3 +173,6 @@ const Login = () => {
 }
 
 export default Login
+;
+fs.writeFileSync(path, newContent, 'utf8');
+console.log('Updated Login.jsx with OTP flow');

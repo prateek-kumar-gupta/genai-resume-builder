@@ -133,10 +133,80 @@ async function getMeController(req, res) {
         }
     })
 }
+
+const OtpModel = require('../models/otp.model');
+const { sendOtpEmail } = require('../services/email.service');
+
+// Generate 6 digit OTP
+const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+/**
+ * @name requestOtpController
+ * @description Request an OTP for password reset or verification
+ * @access Public
+ */
+async function requestOtpController(req, res) {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+
+    const user = await userModel.findOne({ email });
+    if (!user) {
+        // Still return success to prevent email enumeration, or return 404
+        return res.status(404).json({ message: 'No account found with this email' });
+    }
+
+    const otp = generateOTP();
+    
+    // Save or update OTP
+    await OtpModel.findOneAndDelete({ email });
+    await OtpModel.create({ email, otp });
+
+    // Send email
+    const emailSent = await sendOtpEmail(email, otp);
+    
+    if (emailSent) {
+        res.status(200).json({ message: 'OTP sent to email successfully' });
+    } else {
+        res.status(500).json({ message: 'Failed to send email. Check SMTP settings.' });
+    }
+}
+
+/**
+ * @name verifyOtpAndResetPasswordController
+ * @description Verify the OTP and reset the user password
+ * @access Public
+ */
+async function verifyOtpAndResetPasswordController(req, res) {
+    const { email, otp, newPassword } = req.body;
+    
+    if (!email || !otp || !newPassword) {
+        return res.status(400).json({ message: 'Email, OTP, and new password are required' });
+    }
+
+    const otpRecord = await OtpModel.findOne({ email, otp });
+    
+    if (!otpRecord) {
+        return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    await userModel.findOneAndUpdate({ email }, { password: hash });
+    
+    // Clean up used OTP
+    await OtpModel.findOneAndDelete({ email });
+
+    res.status(200).json({ message: 'Password reset successfully. You can now login.' });
+}
+
 module.exports = {
     registerUserController,
     loginUserController,
     logoutUserController,
-    getMeController
-}
+    getMeController,
+    requestOtpController,
+    verifyOtpAndResetPasswordController
+};
+
 

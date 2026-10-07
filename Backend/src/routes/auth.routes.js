@@ -34,4 +34,19 @@ authRouter.get("/logout", authController.logoutUserController)
  */
 authRouter.get("/get-me", authMiddleware.authUser, authController.getMeController)
  
-module.exports = authRouter
+
+/**
+ * @route POST /api/auth/forgot-password/request-otp
+ * @description Request an OTP for password reset
+ * @access Public
+ */
+authRouter.post('/forgot-password/request-otp', authController.requestOtpController);
+
+/**
+ * @route POST /api/auth/forgot-password/reset
+ * @description Verify OTP and reset password
+ * @access Public
+ */
+authRouter.post('/forgot-password/reset', authController.verifyOtpAndResetPasswordController);
+
+module.exports = authRouter;
