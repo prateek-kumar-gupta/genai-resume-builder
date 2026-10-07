@@ -49,4 +49,13 @@ authRouter.post('/forgot-password/request-otp', authController.requestOtpControl
  */
 authRouter.post('/forgot-password/reset', authController.verifyOtpAndResetPasswordController);
 
-module.exports = authRouter;
+
+/**
+ * @route POST /api/auth/google
+ * @description Authenticate with Google
+ * @access Public
+ */
+authRouter.post('/google', authController.googleLoginController);
+
+module.exports = authRouter;;
+

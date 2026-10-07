@@ -200,13 +200,69 @@ async function verifyOtpAndResetPasswordController(req, res) {
     res.status(200).json({ message: 'Password reset successfully. You can now login.' });
 }
 
+
+/**
+ * @name googleLoginController
+ * @description Login or Register a user via Google
+ * @access Public
+ */
+async function googleLoginController(req, res) {
+    const { email, username, googleId, profilePicture } = req.body;
+    
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required from Google' });
+    }
+
+    try {
+        let user = await userModel.findOne({ email });
+        
+        // If user doesn't exist, register them automatically
+        if (!user) {
+            // Generate a random secure password for Google-registered users
+            const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+            const hash = await bcrypt.hash(randomPassword, 10);
+            
+            // Try to use the Google display name, or fallback to email prefix
+            const finalUsername = username || email.split('@')[0];
+            
+            user = await userModel.create({
+                username: finalUsername,
+                email,
+                password: hash
+            });
+        }
+        
+        const token = jwt.sign(
+            {id: user._id, username: user.username},
+            process.env.JWT_SECRET,
+            {expiresIn: "1d"}
+        );
+
+        res.cookie("token", token);
+        
+        res.status(200).json({
+            message: "User authenticated via Google successfully",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        });
+    } catch (err) {
+        console.error("Google Auth Error:", err);
+        res.status(500).json({ message: "Failed to authenticate with Google" });
+    }
+}
+
 module.exports = {
     registerUserController,
     loginUserController,
     logoutUserController,
     getMeController,
     requestOtpController,
-    verifyOtpAndResetPasswordController
-};
+    verifyOtpAndResetPasswordController,
+    googleLoginController
+};;
+
 
 

@@ -50,3 +50,14 @@ export async function getMe() {
     }
 }
         
+export async function googleLogin(email, username, googleId, profilePicture) {
+    try {
+        const response = await api.post("/api/auth/google", { 
+           email, username, googleId, profilePicture
+        })
+        return response.data;
+    } catch(err) {
+         console.log(err)
+         throw err;
+    }
+}
