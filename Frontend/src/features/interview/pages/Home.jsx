@@ -170,7 +170,7 @@ const Home = () => {
             {/* Top Navigation */}
             <Navbar 
                 onOpenHistory={() => setIsHistoryModalOpen(true)}
-                onPreviewDemo={() => {}}
+                
                 hasActiveReport={false}
                 onBackToEditor={() => {}}
             />

@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { LayersIcon, LogOutIcon, UserIcon, HistoryIcon, TargetIcon } from './Icons';
 import { useAuth } from '../../auth/hooks/useAuth';
 
-const Navbar = ({ onOpenHistory, onPreviewDemo, hasActiveReport, onBackToEditor }) => {
+const Navbar = ({ onOpenHistory, hasActiveReport, onBackToEditor }) => {
     const { user, handleLogout } = useAuth();
 
     return (
@@ -42,13 +42,7 @@ const Navbar = ({ onOpenHistory, onPreviewDemo, hasActiveReport, onBackToEditor 
                         </button>
                     )}
 
-                    <button 
-                        className="nav-btn subtle-btn"
-                        onClick={onPreviewDemo}
-                        title="View a fully generated sample interview report"
-                    >
-                        ⚡ Demo Report
-                    </button>
+                    
 
                     <button 
                         className="nav-btn subtle-btn"
@@ -82,3 +76,5 @@ const Navbar = ({ onOpenHistory, onPreviewDemo, hasActiveReport, onBackToEditor 
 };
 
 export default Navbar;
+
+
