@@ -5,7 +5,7 @@ import axios from "axios"
 })
 
 
-export async function register(username, email, password, otp, otp) {
+export async function register(username, email, password, otp) {
     try {
      const response = await api.post("/api/auth/register", {
         username, email, password, otp
@@ -69,3 +69,4 @@ export async function requestRegistrationOtp(email) {
          throw err;
     }
 }
+
