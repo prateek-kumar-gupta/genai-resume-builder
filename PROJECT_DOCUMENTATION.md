@@ -90,6 +90,10 @@ When discussing the project in an interview, highlighting technical hurdles demo
 **The Problem:** During the Registration UI overhaul, the frontend continuously received `400 Bad Request` errors from the backend claiming `email` and `password` were missing, even though the inputs were filled.
 **The Solution:** Debugging the network payload revealed an argument destructuring mismatch. The React Hook was passing an object `{ username, email, password }` into the API service layer, but the service function `export async function register(username, email, password)` expected distinct arguments. The object was mapped entirely to `username`, leaving the rest `undefined`. We resolved this by aligning the function signatures and maintaining strict separation of concerns between Hooks (data collection) and API Services (data formatting).
 
+### Challenge 6: Cross-Origin JWT Cookie Blocking in Production
+**The Problem:** During local development, logging in worked flawlessly. However, immediately after deploying to Vercel and Render, the login APIs returned a 200 OK status, but the user remained unauthenticated on the frontend.
+**The Solution:** The issue stemmed from strict browser privacy policies regarding cross-site cookies. Because the frontend (ercel.app) and backend (onrender.com) were on completely different top-level domains, modern browsers (Chrome, Safari) automatically blocked the backend from setting the HTTP-Only JWT cookie on the client. To resolve this, we modified the Express es.cookie() configuration to include { secure: true, sameSite: "none" }. SameSite=none explicitly permits cross-domain cookie delivery, while Secure=true mandates that the cookie only travels over encrypted HTTPS connections (which our deployment stack provides natively).
+
 ---
 
 ## 5. Deployment Strategy & Environment Configuration
@@ -147,5 +151,6 @@ Below is the definitive list of RESTful API endpoints we designed and implemente
 | :--- | :--- | :--- | :--- |
 | **POST** | \/\ | Accepts a multipart form containing a PDF resume and text JD. Parses the PDF, queries Gemini AI, returns the structured JSON report, and saves it to MongoDB. | \FormData: { resume: File, jd: String }\ |
 | **GET** | \/\ | Retrieves the entire history of saved interview reports for the currently authenticated user. | *None (Requires Cookie)* |
+
 
 
