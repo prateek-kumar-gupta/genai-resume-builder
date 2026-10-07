@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+﻿import React, {useState} from 'react'
 import {useAuth} from "../hooks/useAuth"
 import { useNavigate,Link } from 'react-router'
 import "../auth.form.scss"
@@ -55,7 +55,7 @@ const Register = () => {
                                 <label htmlFor="password">Password</label>
                                 <input 
                                     onChange={(e) => setPassword(e.target.value)} 
-                                    type="password" name="password" id="password" placeholder="••••••••" />
+                                    type="password" name="password" id="password" placeholder="********" />
                             </div>
                             
                             <button className="button primary-button">Sign up</button>
@@ -70,3 +70,4 @@ const Register = () => {
 }
 
 export default Register
+

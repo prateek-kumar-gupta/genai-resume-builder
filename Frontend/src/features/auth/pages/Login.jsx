@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+ï»¿import React, {useState} from 'react'
 import { useNavigate,Link } from 'react-router'
 import "../auth.form.scss"
 import { useAuth } from '../hooks/useAuth';
@@ -99,7 +99,7 @@ const Login = () => {
                                         <input
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            type="password" name="password" id="password" placeholder="••••••••" required />
+                                            type="password" name="password" id="password" placeholder="********" required />
                                     </div>
                                     
                                     <button className="button primary-button">Sign in</button>
@@ -152,7 +152,7 @@ const Login = () => {
                                         <input 
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
-                                            type="password" name="newPassword" id="newPassword" placeholder="••••••••" required />
+                                            type="password" name="newPassword" id="newPassword" placeholder="********" required />
                                     </div>
                                     <button className="button primary-button" disabled={otpLoading}>
                                         {otpLoading ? "Verifying..." : "Reset Password"}
@@ -170,3 +170,5 @@ const Login = () => {
 }
 
 export default Login
+
+
