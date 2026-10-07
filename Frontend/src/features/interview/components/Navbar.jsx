@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { SparklesIcon, LogOutIcon, UserIcon, HistoryIcon, TargetIcon } from './Icons';
+import { LayersIcon, LogOutIcon, UserIcon, HistoryIcon, TargetIcon } from './Icons';
 import { useAuth } from '../../auth/hooks/useAuth';
 
 const Navbar = ({ onOpenHistory, onPreviewDemo, hasActiveReport, onBackToEditor }) => {
@@ -10,8 +10,8 @@ const Navbar = ({ onOpenHistory, onPreviewDemo, hasActiveReport, onBackToEditor 
         <header className="app-navbar">
             <div className="navbar-container">
                 <div className="navbar-brand" onClick={onBackToEditor} role="button" tabIndex={0} title="Return to Interview Setup">
-                    <div className="logo-icon-box">
-                        <SparklesIcon size={20} className="logo-sparkle" />
+                    <div className="logo-icon-box" style={{background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'}}>
+                        <LayersIcon size={20} className="logo-sparkle" />
                     </div>
                     <div className="brand-text">
                         <span className="brand-title">Career<span className="gradient-text">Craft</span></span>

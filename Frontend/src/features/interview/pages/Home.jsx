@@ -14,7 +14,8 @@ import {
     ShieldIcon, 
     CalendarIcon, 
     RefreshCwIcon,
-    CheckCircleIcon
+    CheckCircleIcon,
+    LayersIcon
 } from '../components/Icons';
 import { sampleJobDescriptions, sampleDemoReport } from '../data/sampleData';
 import "../style/home.scss";
@@ -222,9 +223,20 @@ const Home = () => {
                     {loading && (
                         <div className="loading-overlay-card animate-fade-in">
                             <div className="aurora-loader">
-                                <div className="aurora-orb orb-1"></div>
-                                <div className="aurora-orb orb-2"></div>
-                                <div className="aurora-orb orb-3"></div>
+                                <div className="logo-icon-box" style={{
+                                    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)', 
+                                    boxShadow: '0 4px 20px rgba(59, 130, 246, 0.6)', 
+                                    width: '72px', 
+                                    height: '72px', 
+                                    borderRadius: '18px', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'center', 
+                                    color: 'white', 
+                                    animation: 'pulseGlow 2s infinite'
+                                }}>
+                                    <LayersIcon size={38} className="spin-icon" />
+                                </div>
                             </div>
 
                             <h3 className="loading-title">Synthesizing Interview Playbook...</h3>
@@ -461,7 +473,7 @@ const Home = () => {
                                     <div className="btn-content">
                                         {loading ? (
                                             <>
-                                                <RefreshCwIcon size={20} className="spin-icon" />
+                                                <LayersIcon size={20} className="spin-icon" />
                                                 <span>Synthesizing Report...</span>
                                             </>
                                         ) : (

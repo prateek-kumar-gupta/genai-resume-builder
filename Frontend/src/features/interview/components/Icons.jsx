@@ -1,5 +1,13 @@
 import React from 'react';
 
+export const LayersIcon = ({ className = "", size = 20 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+        <polyline points="2 12 12 17 22 12"/>
+        <polyline points="2 17 12 22 22 17"/>
+    </svg>
+);
+
 export const SparklesIcon = ({ className = "", size = 20 }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
         <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
