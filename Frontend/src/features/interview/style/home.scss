@@ -1984,4 +1984,24 @@
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
+}@media (max-width: 768px) {
+  .app-navbar .navbar-container {
+    padding: 0.85rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  .app-navbar .navbar-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  .app-navbar .nav-btn span, .app-navbar .nav-btn {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+  }
+  .app-navbar .username-text {
+    display: none;
+  }
 }
