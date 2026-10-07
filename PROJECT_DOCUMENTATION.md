@@ -148,3 +148,4 @@ Below is the definitive list of RESTful API endpoints we designed and implemente
 | **POST** | \/\ | Accepts a multipart form containing a PDF resume and text JD. Parses the PDF, queries Gemini AI, returns the structured JSON report, and saves it to MongoDB. | \FormData: { resume: File, jd: String }\ |
 | **GET** | \/\ | Retrieves the entire history of saved interview reports for the currently authenticated user. | *None (Requires Cookie)* |
 
+
