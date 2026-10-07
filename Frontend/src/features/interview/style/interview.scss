@@ -11,10 +11,10 @@ $text-primary: #f0f6fc;
 $text-secondary: #9aa5b8;
 $text-muted: #6e798d;
 
-$accent: #ff2d78;
-$accent-gradient: linear-gradient(135deg, #ff2d78 0%, #ff5e62 100%);
-$accent-soft: rgba(#ff2d78, 0.12);
-$accent-border: rgba(#ff2d78, 0.3);
+$accent: #3b82f6;
+$accent-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+$accent-soft: rgba(#3b82f6, 0.12);
+$accent-border: rgba(#3b82f6, 0.3);
 
 // Severity Color System
 $severity-high: #ff4d6d;
@@ -94,7 +94,7 @@ $font-stack: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, H
     min-height: 100vh;
     background-color: $bg-page;
     background-image: 
-        radial-gradient(circle at 10% 15%, rgba(#ff2d78, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 10% 15%, rgba(#3b82f6, 0.05) 0%, transparent 40%),
         radial-gradient(circle at 90% 85%, rgba(#4facfe, 0.04) 0%, transparent 45%);
     color: $text-primary;
     font-family: $font-stack;
