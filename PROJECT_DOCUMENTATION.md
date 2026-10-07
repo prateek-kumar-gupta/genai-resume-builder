@@ -82,7 +82,11 @@ When discussing the project in an interview, highlighting technical hurdles demo
 **The Problem:** Generating OTPs for users meant saving temporary codes to the database. If users requested OTPs but never verified them, the database would quickly bloat with stale, insecure codes.
 **The Solution:** Instead of writing a background worker or chron job to clean up the database, we leveraged a native database feature: **MongoDB TTL (Time-To-Live) Indexes**. By setting `expires: 600` on the `createdAt` schema field, MongoDB's background thread automatically scrubs expired codes exactly 10 minutes after generation, ensuring optimal performance and strict security.
 
-### Challenge 4: Passing Objects vs. Arguments in API Functions
+### Challenge 4: The Render Deployment Crash & Gitignore Wildcards
+**The Problem:** Upon our first deployment to Render, the backend server crashed instantly with a `MODULE_NOT_FOUND` error stating it could not find `otp.model.js`. 
+**The Solution:** Debugging revealed that the file existed locally but was missing on GitHub. We discovered that a typo in `Backend/.gitignore` (a stray `*` character on line 3) had accidentally instructed Git to ignore all newly created files in the Backend directory. By fixing the `.gitignore` syntax and pushing the missing files, Render automatically redeployed and the server started successfully.
+
+### Challenge 5: Passing Objects vs. Arguments in API Functions
 **The Problem:** During the Registration UI overhaul, the frontend continuously received `400 Bad Request` errors from the backend claiming `email` and `password` were missing, even though the inputs were filled.
 **The Solution:** Debugging the network payload revealed an argument destructuring mismatch. The React Hook was passing an object `{ username, email, password }` into the API service layer, but the service function `export async function register(username, email, password)` expected distinct arguments. The object was mapped entirely to `username`, leaving the rest `undefined`. We resolved this by aligning the function signatures and maintaining strict separation of concerns between Hooks (data collection) and API Services (data formatting).
 
@@ -111,3 +115,36 @@ We chose a highly reliable, free-tier friendly deployment stack that separates t
     *   Vercel is optimized for Vite and React. We imported the GitHub repository and set the Root Directory to \Frontend\.
     *   We injected the Firebase OAuth keys alongside the crucial \VITE_BACKEND_URL\ (pointing to the live Render server).
 4.  **The Final Handshake:** After Vercel generated the live frontend URL, we fed that URL back into Render's \FRONTEND_URL\ environment variable. This completed the CORS whitelist, allowing the two separated systems to securely exchange JWT cookies over the internet.
+
+### 5.3 The "Two-Way Handshake" (CORS & API Bridging)
+In a modern decoupled architecture, security dictates that servers must strictly whitelist which domains are allowed to talk to them (CORS - Cross-Origin Resource Sharing). 
+*   **Step 1 (Render trusts Vercel):** We gave the Backend (Render) the exact URL of the Frontend (Vercel) via the FRONTEND_URL environment variable. This allows the backend to accept network requests specifically from our Vercel domain, rejecting all other malicious traffic.
+*   **Step 2 (Vercel trusts Render):** We gave the Frontend (Vercel) the exact URL of the Backend (Render) via the VITE_BACKEND_URL variable. This tells the Axios HTTP client exactly where to send data.
+*   **Step 3 (Firebase trusts Vercel):** Finally, we whitelisted the Vercel URL inside the Firebase Console under "Authorized Domains." This allows the Google OAuth popup to render securely on our production domain without throwing a "Domain not authorized" error.
+
+---
+
+## 6. Complete API Reference
+
+Below is the definitive list of RESTful API endpoints we designed and implemented for the backend.
+
+### Authentication Endpoints (\/api/auth\)
+
+| Method | Endpoint | Description | Payload (Body) |
+| :--- | :--- | :--- | :--- |
+| **POST** | \/register/request-otp\ | Generates a 6-digit OTP, saves it to MongoDB, and emails it to the user. | \{ email }\ |
+| **POST** | \/register\ | Verifies the OTP. If valid, hashes the password, creates the User, and issues an HTTP-Only JWT cookie. | \{ username, email, password, otp }\ |
+| **POST** | \/login\ | Validates standard email/password credentials and issues a JWT cookie. | \{ email, password }\ |
+| **POST** | \/google\ | The Firebase Bridge. Takes Google OAuth details, auto-registers the user (if new), and issues a JWT cookie. | \{ email, username, googleId, profilePicture }\ |
+| **POST** | \/forgot-password/request-otp\ | Generates an OTP for password resets and emails the user. | \{ email }\ |
+| **POST** | \/forgot-password/verify-otp\ | Verifies the OTP and updates the user's password in MongoDB. | \{ email, otp, newPassword }\ |
+| **GET** | \/get-me\ | Middleware verifies the JWT cookie and returns the logged-in user's profile data. | *None (Requires Cookie)* |
+| **GET** | \/logout\ | Clears the HTTP-Only JWT cookie, ending the session. | *None* |
+
+### Interview Engine Endpoints (\/api/interview\)
+
+| Method | Endpoint | Description | Payload |
+| :--- | :--- | :--- | :--- |
+| **POST** | \/\ | Accepts a multipart form containing a PDF resume and text JD. Parses the PDF, queries Gemini AI, returns the structured JSON report, and saves it to MongoDB. | \FormData: { resume: File, jd: String }\ |
+| **GET** | \/\ | Retrieves the entire history of saved interview reports for the currently authenticated user. | *None (Requires Cookie)* |
+
