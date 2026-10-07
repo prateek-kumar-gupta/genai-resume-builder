@@ -1,78 +1,88 @@
-# 🚀 GenAI Interview & Resume Strategist
+# CareerCraft
 
-A full-stack AI-powered application designed to help job seekers land their dream roles. By leveraging Google's Gemini AI, this application analyzes a target Job Description against your uploaded Resume and a quick Self-Description to generate a highly customized, actionable interview preparation report.
+CareerCraft is a full-stack web application designed to help software engineers and job seekers prepare for interviews. It takes a target job description and your current resume, passes them to Google's Gemini AI, and generates a detailed, customized interview strategy and preparation report.
 
-## ✨ Features
+## Core Features
 
-- **🧠 AI-Powered Analysis:** Uses Google Gemini (`gemini-3.8-flash`) to evaluate candidate fit.
-- **📄 Smart Resume Parsing:** Upload your PDF or DOCX resume for instant contextual analysis.
-- **🎯 Tailored Interview Plans:** Generates custom interview strategies, predicted questions, and skill gap analyses based on the exact job description.
-- **🔒 Secure Authentication:** Built-in user authentication (session/cookies) to securely store and manage your past interview reports.
-- **📱 Modern UI:** A beautiful, responsive dark-mode frontend built with React and SCSS.
-- **📊 History Tracking:** Save and review your past generated reports and match scores.
+- AI-Powered Analysis: Uses Google Gemini to evaluate how well your resume matches a specific job description.
+- Resume Parsing: Upload your PDF resume for instant contextual analysis.
+- Custom Interview Plans: Generates personalized interview strategies, predicted technical questions, and skill gap analyses.
+- Hybrid Authentication: Secure login system supporting both standard email/password (with OTP email verification) and Google OAuth via Firebase.
+- History Tracking: Save and review your past generated reports and match scores in a personalized dashboard.
 
-## 🛠️ Tech Stack
+## Technical Architecture
 
-**Frontend:**
-- React (Vite)
-- React Router v6
-- SCSS
-- Context API
+The application follows a decoupled 4-layer MERN architecture:
 
-**Backend:**
-- Node.js & Express
-- MongoDB & Mongoose
-- `@google/genai` (Gemini API)
-- Multer & PDF-Parse (File handling)
-- JSON Web Tokens (JWT)
+- Frontend: React (Vite), React Router v6, custom SCSS (Glassmorphism design).
+- State Management: React Context API and custom hooks for auth and AI generation.
+- Backend: Node.js, Express, Multer (for PDF uploads), PDF-Parse.
+- Database: MongoDB & Mongoose.
+- Authentication: Custom JWT cookies, Nodemailer for OTPs (with MongoDB TTL indexing), and Firebase for Google OAuth bridging.
+- AI Integration: @google/genai SDK.
 
-## ⚙️ Prerequisites
+## Prerequisites
 
 - Node.js (v18+)
 - MongoDB (Local or Atlas URI)
 - Google Gemini API Key
+- Gmail App Password (for Nodemailer OTPs)
+- Firebase Project Config (for Google OAuth)
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
-1. **Clone the repository:**
-   ```bash
+1. Clone the repository
+   \\\ash
    git clone https://github.com/prateek-kumar-gupta/genai-resume-builder.git
    cd genai-resume-builder
-   ```
+   \\\
 
-2. **Setup the Backend:**
-   ```bash
+2. Setup the Backend
+   \\\ash
    cd Backend
    npm install
-   ```
-   Create a `.env` file in the `Backend` directory:
-   ```env
+   \\\
+   
+   Create a .env file in the Backend directory:
+   \\\env
    PORT=3000
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
-   GEMINI_API_KEY=your_google_gemini_api_key
-   ```
-   Start the backend development server:
-   ```bash
+   GOOGLE_GENAI_API_KEY=your_google_gemini_api_key
+   EMAIL_USER=your_gmail_address
+   EMAIL_PASS=your_gmail_app_password
+   \\\
+   
+   Start the backend server:
+   \\\ash
    npm run dev
-   ```
+   \\\
 
-3. **Setup the Frontend:**
+3. Setup the Frontend
    Open a new terminal window:
-   ```bash
+   \\\ash
    cd Frontend
    npm install
-   ```
-   Start the frontend development server:
-   ```bash
+   \\\
+
+   Create a .env file in the Frontend directory:
+   \\\env
+   VITE_FIREBASE_API_KEY=your_firebase_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+   VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_firebase_sender_id
+   VITE_FIREBASE_APP_ID=your_firebase_app_id
+   \\\
+   
+   Start the frontend server:
+   \\\ash
    npm run dev
-   ```
+   \\\
 
-4. **Open the App:**
-   Navigate to `http://localhost:5173` in your browser.
+## Usage
 
-## 📝 Usage
-1. Create an account or log in.
-2. Paste the Job Description of the role you are targeting.
-3. Upload your Resume (PDF) OR provide a brief Self Description.
-4. Click **Generate Interview Report** and let the AI build your customized strategy in seconds!
+1. Register for an account (requires OTP email verification) or sign in with Google.
+2. Navigate to the Home page and paste the Job Description of the role you want.
+3. Upload your current Resume in PDF format.
+4. Click "Generate Interview Report". The backend will process the PDF, query Gemini, and redirect you to a custom interview strategy dashboard.
