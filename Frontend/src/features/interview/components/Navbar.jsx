@@ -14,8 +14,8 @@ const Navbar = ({ onOpenHistory, onPreviewDemo, hasActiveReport, onBackToEditor 
                         <SparklesIcon size={20} className="logo-sparkle" />
                     </div>
                     <div className="brand-text">
-                        <span className="brand-title">Career<span className="gradient-text">GenAI</span></span>
-                        <span className="brand-badge">INTERVIEW MATRIX</span>
+                        <span className="brand-title">Career<span className="gradient-text">Craft</span></span>
+                        <span className="brand-badge">RESUME & INTERVIEW AI</span>
                     </div>
                 </div>
 

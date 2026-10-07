@@ -1,55 +1,71 @@
-import react ,{useState} from 'react'
+import React, {useState} from 'react'
 import {useAuth} from "../hooks/useAuth"
 import { useNavigate,Link } from 'react-router'
+import "../auth.form.scss"
 
 const Register = () => {
-  const navigate = useNavigate();
-  const [username , setUsername] = useState("");
-  const [email , setEmail] = useState("");
-  const [password , setPassword] = useState("");
-  const {loading , handleRegister} = useAuth();
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    await handleRegister({username , email , password})
-    navigate('/')
-  }
-
-  if(loading) {
-    return (<main><h1>Loading........</h1></main>)
-  }
-  return (
-
+    const navigate = useNavigate();
+    const [username , setUsername] = useState("");
+    const [email , setEmail] = useState("");
+    const [password , setPassword] = useState("");
+    const {loading , handleRegister} = useAuth();
     
-     <main>
-        <div className = "form-container">
-             <h1>Register</h1>
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        await handleRegister({username , email , password})
+        navigate('/')
+    }
 
-             <form onSubmit={handleSubmit}>
-              <div className = "input-group">
-                <label htmlFor = "username">Username</label>
-                <input
-                onChange={(e) => setUsername(e.target.value)}
-                type = "text" name = "username" id = "username" placeholder = "Enter your username" />
-                </div>
-              <div className = "input-group">
-                <label htmlFor = "email">Email</label>
-                <input
-                 onChange={(e) => setEmail(e.target.value)}
-                type = "email" name = "email" id = "email" placeholder = "Enter your email" />
-                </div>
-                <div className = "input-group">
-                    <label htmlFor = "password">Password</label>
-                    <input 
-                     onChange={(e) => setPassword(e.target.value)} 
-                    type = "password" name = "password" id = "password" placeholder = "Enter your password" />
-                
+    if(loading) {
+        return (<main className="auth-layout"><h1 style={{color: 'white'}}>Creating account...</h1></main>)
+    }
+
+    return (
+        <main className="auth-layout">
+            <div className="auth-split">
+                <div className="auth-banner">
+                    <div className="banner-content">
+                        <h2>CareerCraft</h2>
+                        <p>Join today and start crafting the perfect resume and interview strategy.</p>
+                        <div className="abstract-shape"></div>
                     </div>
-            <button className = "button primary-button" >Register</button>
-             </form>
-             <p>Already have an account? <Link to = {"/login"} >Login</Link></p>
+                </div>
+                
+                <div className="auth-form-wrapper">
+                    <div className="form-container">
+                        <div className="form-header">
+                            <h1>Create an account</h1>
+                            <p>Enter your details below to get started.</p>
+                        </div>
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="input-group">
+                                <label htmlFor="username">Username</label>
+                                <input
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    type="text" name="username" id="username" placeholder="johndoe" />
+                            </div>
+                            <div className="input-group">
+                                <label htmlFor="email">Email</label>
+                                <input
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    type="email" name="email" id="email" placeholder="name@example.com" />
+                            </div>
+                            <div className="input-group">
+                                <label htmlFor="password">Password</label>
+                                <input 
+                                    onChange={(e) => setPassword(e.target.value)} 
+                                    type="password" name="password" id="password" placeholder="••••••••" />
+                            </div>
+                            
+                            <button className="button primary-button">Sign up</button>
+                        </form>
+                        
+                        <p className="auth-footer">Already have an account? <Link to={"/login"}>Sign in</Link></p>
+                    </div>
+                </div>
             </div>
-    </main>
+        </main>
     )
 }
 
