@@ -3,7 +3,7 @@ import {useAuth} from "../hooks/useAuth"
 import { useNavigate,Link } from 'react-router'
 import "../auth.form.scss"
 import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../../../../firebase";
+import { auth, googleProvider } from "../../../firebase";
 import { requestRegistrationOtp } from "../services/auth.api";
 
 const Register = () => {
@@ -157,3 +157,4 @@ const Register = () => {
 }
 
 export default Register
+
