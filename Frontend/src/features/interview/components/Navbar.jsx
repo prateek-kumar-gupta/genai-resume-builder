@@ -22,15 +22,7 @@ const Navbar = ({ onOpenHistory, hasActiveReport, onBackToEditor }) => {
 
 
                 <div className="navbar-actions">
-                    <Link 
-                        to="/interview"
-                        className="nav-btn subtle-btn"
-                        title="Open 3-Column Interview Layout Studio"
-                        style={{ textDecoration: 'none' }}
-                    >
-                        <TargetIcon size={15} />
-                        <span>Studio View</span>
-                    </Link>
+                    
 
                     {hasActiveReport && (
                         <button 
@@ -76,5 +68,6 @@ const Navbar = ({ onOpenHistory, hasActiveReport, onBackToEditor }) => {
 };
 
 export default Navbar;
+
 
 
